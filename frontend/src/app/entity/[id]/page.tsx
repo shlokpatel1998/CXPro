@@ -193,58 +193,23 @@ export default function EntityDetailPage() {
     if (!testProcedure || !user || user.role !== 'OCA') return
 
     try {
-      // Update test procedure status
-      const { error: updateError } = await supabase
-        .from('test_procedure_instances')
-        .update({ 
-          status: 'active',
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', testProcedure.id)
-
-      if (updateError) throw updateError
-
-      // Create audit log entry
-      const { error: auditError } = await supabase
-        .from('audit_log_entries')
-        .insert({
-          project_id: testProcedure.project_id,
-          actor_type: 'human',
-          actor_id: user.id,
-          action: 'accepted_draft',
-          confirmed_ai_run_id: testProcedure.agent_run_id,
-          metadata: {
-            test_procedure_instance_id: testProcedure.id
-          },
-          org_id: testProcedure.org_id
-        })
-
-      if (auditError) throw auditError
-
-      // Mark inbox item as acted
-      const { error: inboxError } = await supabase
+      // Get inbox item ID if exists
+      const { data: inboxItem } = await supabase
         .from('inbox_items')
-        .update({
-          action_state: 'acted',
-          acted_at: new Date().toISOString()
-        })
+        .select('id')
         .eq('test_procedure_instance_id', testProcedure.id)
         .eq('user_id', user.id)
+        .single()
 
-      if (inboxError) throw inboxError
-
-      // Emit event to outbox
-      const { error: outboxError } = await supabase
-        .from('outbox')
-        .insert({
-          event_type: 'TestProcedureInstanceActivated',
-          payload: {
-            test_procedure_instance_id: testProcedure.id,
-            activated_by: user.id
-          }
+      // Call the database function to handle the transaction
+      const { error } = await supabase
+        .rpc('accept_draft_test_procedure', {
+          p_test_procedure_id: testProcedure.id,
+          p_user_id: user.id,
+          p_inbox_item_id: inboxItem?.id || null
         })
 
-      if (outboxError) throw outboxError
+      if (error) throw error
 
       // Update local state
       setTestProcedure(prev => prev ? { ...prev, status: 'active' } : null)
@@ -500,6 +465,8 @@ export default function EntityDetailPage() {
                   projectId={testProcedure.project_id}
                   testProcedureId={testProcedure.id}
                   agentRunId={testProcedure.agent_run_id}
+                  userId={user?.id}
+                  orgId={testProcedure.org_id}
                 />
               )}
             </div>

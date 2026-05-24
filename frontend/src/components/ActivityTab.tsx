@@ -17,11 +17,14 @@ interface ActivityTabProps {
   projectId: string
   testProcedureId: string
   agentRunId: string | null
+  userId?: string
+  orgId?: string
 }
 
-export default function ActivityTab({ projectId, testProcedureId, agentRunId }: ActivityTabProps) {
+export default function ActivityTab({ projectId, testProcedureId, agentRunId, userId, orgId }: ActivityTabProps) {
   const [activities, setActivities] = useState<ActivityEntry[]>([])
   const [loading, setLoading] = useState(true)
+  const [feedbackGiven, setFeedbackGiven] = useState<Record<string, 'thumbs_up' | 'thumbs_down' | null>>({})
 
   const loadActivities = async () => {
     try {
@@ -117,6 +120,46 @@ export default function ActivityTab({ projectId, testProcedureId, agentRunId }: 
     return date.toLocaleDateString()
   }
 
+  const handleFeedback = async (activityId: string, agentRunId: string, feedbackType: 'thumbs_up' | 'thumbs_down') => {
+    if (!userId || !orgId) {
+      console.error('Missing userId or orgId for feedback')
+      return
+    }
+
+    try {
+      // Call the database function to record feedback
+      const { error } = await supabase
+        .rpc('record_feedback', {
+          p_agent_run_id: agentRunId,
+          p_user_id: userId,
+          p_feedback_type: feedbackType,
+          p_feedback_text: null,
+          p_message_id: null
+        })
+
+      if (error) throw error
+
+      // Update local state
+      setFeedbackGiven(prev => ({ ...prev, [activityId]: feedbackType }))
+
+      // If thumbs down, prompt for additional feedback
+      if (feedbackType === 'thumbs_down') {
+        const reason = prompt('What was wrong with this AI generation?')
+        if (reason) {
+          await supabase
+            .from('feedback_records')
+            .update({ feedback_text: reason })
+            .eq('agent_run_id', agentRunId)
+            .eq('created_by', userId)
+            .order('created_at', { ascending: false })
+            .limit(1)
+        }
+      }
+    } catch (error) {
+      console.error('Error saving feedback:', error)
+    }
+  }
+
   if (loading) {
     return <div className="bp-activity-loading">Loading activity...</div>
   }
@@ -171,6 +214,27 @@ export default function ActivityTab({ projectId, testProcedureId, agentRunId }: 
               {activity.actor_type === 'human' && activity.action === 'accepted draft' && agentRunId && (
                 <div className="bp-activity-confirmation">
                   Confirmed AI draft from <span className="bp-mono">{agentRunId.slice(0, 8)}</span>
+                </div>
+              )}
+              
+              {activity.actor_type === 'ai' && activity.id === agentRunId && userId && orgId && (
+                <div className="bp-activity-feedback">
+                  <button
+                    className={`bp-feedback-btn ${feedbackGiven[activity.id] === 'thumbs_up' ? 'is-active' : ''}`}
+                    onClick={() => handleFeedback(activity.id, activity.id, 'thumbs_up')}
+                    title="Helpful"
+                    disabled={!!feedbackGiven[activity.id]}
+                  >
+                    👍
+                  </button>
+                  <button
+                    className={`bp-feedback-btn ${feedbackGiven[activity.id] === 'thumbs_down' ? 'is-active' : ''}`}
+                    onClick={() => handleFeedback(activity.id, activity.id, 'thumbs_down')}
+                    title="Not helpful"
+                    disabled={!!feedbackGiven[activity.id]}
+                  >
+                    👎
+                  </button>
                 </div>
               )}
             </div>

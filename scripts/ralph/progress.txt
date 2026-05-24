@@ -12,6 +12,9 @@ Started: Sun May 24 13:39:19 CDT 2026
 - Supabase Realtime subscriptions: use channel naming pattern `table_${userId}` for user-specific updates
 - Auto-subscription pattern: use database triggers on participations table to auto-create subscriptions based on user role
 - Inbox items need action_state field (pending/acted/dismissed) for proper lifecycle management
+- Blueprint design: use CSS custom properties for theming; Archivo + JetBrains Mono fonts
+- TypeScript: handle Record<string, unknown> metadata with bracket notation access
+- React patterns: useCallback for functions in effect dependencies; conditional rendering with ternary for unknown types
 
 ---
 
@@ -200,4 +203,24 @@ Started: Sun May 24 13:39:19 CDT 2026
   - Inbox items should have action_state (pending/acted/dismissed) for proper lifecycle management
   - AI refusal events need distinct UI treatment with "Upload more docs" CTA instead of "Review draft"
   - Testing with real auth.users is required due to foreign key constraints (can't create mock users easily)
+---
+
+## May 24 16:13 CDT 2026 - Slice-08 Complete
+- Successfully implemented entity detail page with three-panel layout per architecture §4.2
+- Created comprehensive UI components: CitationChip, AiChatDrawer, ActivityTab, CommandPalette
+- Applied Blueprint visual design tokens (Archivo + JetBrains Mono fonts, blue+cream palette)
+- Implemented responsive design (desktop >=1024px three panels, <1024px single-scroll)
+- Added citation chips with PDF deep-linking (page + bbox coordinates)
+- Created AI Chat drawer with grounded responses and inline citations
+- Built Activity tab showing AgentRun entries with AI lightning-bolt glyph distinguishing AI from human
+- Implemented Cmd-K palette for searching Projects + Documents by name
+- Added audit_log_entries and feedback_records tables (migration 007_audit_feedback.sql)
+- **Files changed:** frontend/src/app/entity/[id]/page.tsx, frontend/src/app/entity/[id]/entity.css, frontend/src/components/CitationChip.tsx, frontend/src/components/AiChatDrawer.tsx, frontend/src/components/ActivityTab.tsx, frontend/src/components/CommandPalette.tsx, frontend/src/app/inbox/page.tsx, migrations/007_audit_feedback.sql
+- **Learnings for future iterations:**
+  - Blueprint design system uses CSS custom properties for consistent theming across light/dark modes
+  - TypeScript strict mode requires explicit handling of Record<string, unknown> metadata fields
+  - React Hook dependencies need careful management to avoid ESLint warnings (useCallback for functions in deps)
+  - Responsive drawer pattern: fixed right panel on desktop, bottom sheet on mobile
+  - Citation deep-linking requires signed URLs from Supabase Storage for PDF access
+  - Activity feed pattern: combine multiple data sources (agent_runs, test_procedure_instances) into unified timeline
 ---
