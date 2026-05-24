@@ -1,0 +1,15 @@
+# Ralph Progress Log
+Started: 2026-05-24 — PRD-2 Blueprint frontend port
+Branch: ralph/prd-2-blueprint-frontend
+PRD: https://github.com/shlokpatel1998/CXPro/issues/17
+
+## Codebase Patterns
+- frontend/src/lib/ pattern: typed exports, Supabase client only, no React, no DOM (see storage.ts as prior art)
+- Blueprint CSS strategy: blueprint.css is imported wholesale and untouched; components use .bp-* utility classes directly. Do NOT port tokens to Tailwind's @theme block. See docs/adr/0001-css-strategy-blueprint.md once written (US-003).
+- Glossary alias: "Equipment" (UI label) = TestProcedureInstance + ExtractedSpec join. Do NOT introduce an Equipment entity, table, or type.
+- Inbox vs Dashboard: Inbox is OCA persona home (cross-project, /inbox); Dashboard is project home (per-project, /project/[id]). Do not conflate.
+- All signed-in routes belong under frontend/src/app/(app)/ to inherit the Blueprint shell. /auth stays outside.
+- Test runner: Vitest (added in US-004). Tests live in frontend/src/lib/__tests__/.
+- Backend: Slices 01-09 of PRD-1 shipped; do NOT modify backend code in this PRD unless an acceptance criterion explicitly requires it. Migration 006_gemini_embeddings.sql still needs to be applied to Supabase (separate from this PRD).
+
+---
