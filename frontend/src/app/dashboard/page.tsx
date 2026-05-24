@@ -305,12 +305,22 @@ export default function DashboardPage() {
                   {projects.map(project => {
                     const org = orgs.find(o => o.id === project.org_id)
                     return (
-                      <div key={project.id} className="p-3 border rounded">
-                        <h4 className="font-medium">{project.name}</h4>
-                        <p className="text-sm text-gray-600">{org?.name}</p>
-                        {project.description && (
-                          <p className="text-sm text-gray-500 mt-1">{project.description}</p>
-                        )}
+                      <div key={project.id} className="p-3 border rounded hover:bg-gray-50">
+                        <div className="flex justify-between items-start">
+                          <div className="flex-1">
+                            <h4 className="font-medium">{project.name}</h4>
+                            <p className="text-sm text-gray-600">{org?.name}</p>
+                            {project.description && (
+                              <p className="text-sm text-gray-500 mt-1">{project.description}</p>
+                            )}
+                          </div>
+                          <button
+                            onClick={() => router.push(`/project/${project.id}`)}
+                            className="ml-4 bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700"
+                          >
+                            View
+                          </button>
+                        </div>
                       </div>
                     )
                   })}

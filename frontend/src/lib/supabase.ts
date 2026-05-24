@@ -60,3 +60,26 @@ export interface Assignment {
   discipline_scope_id: string
   created_at: string
 }
+
+export interface Document {
+  id: string
+  project_id: string
+  filename: string
+  original_filename: string
+  file_size: number
+  mime_type: string
+  storage_path: string
+  status: 'uploaded' | 'processing' | 'indexed' | 'failed'
+  failure_reason?: string
+  uploaded_by: string
+  created_at: string
+  updated_at: string
+}
+
+export interface OutboxEvent {
+  id: string
+  event_type: string
+  event_data: Record<string, unknown>
+  processed_at?: string
+  created_at: string
+}
