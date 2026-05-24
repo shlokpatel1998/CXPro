@@ -35,7 +35,7 @@
         "Verify in browser using dev-browser skill"
       ],
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "PRD #17 Slice A. Depends on US-001."
     },
     {
@@ -48,7 +48,7 @@
         "Typecheck passes"
       ],
       "priority": 3,
-      "passes": false,
+      "passes": true,
       "notes": "PRD #17. Documentation deliverable; no code."
     },
     {

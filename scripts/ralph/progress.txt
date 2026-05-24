@@ -20,3 +20,29 @@ Started: Sun May 24 17:47:23 CDT 2026
   - Archivo font is now the primary font, JetBrains Mono available for monospace elements
   - CSS variables are exposed for both fonts for easy usage
 ---
+## Sun May 24 17:54 CDT 2026 - US-002
+- Created (app) route group with Blueprint shell layout
+- Implemented sidebar with Inbox, Projects nav items and theme toggle
+- Added conditional Equipment nav item that appears only in project context
+- Implemented topbar with breadcrumb navigation and user avatar
+- Moved dashboard, inbox, project, entity pages under (app) route group
+- Auth route remains outside the shell as required
+- Theme toggle persists to localStorage and updates data-theme attribute
+- **Files changed:** frontend/src/app/(app)/layout.tsx (created), moved existing pages to (app) directory
+- **Learnings for future iterations:**
+  - Route groups in Next.js use parentheses syntax: (app)
+  - Theme persistence uses localStorage and data-theme attribute on documentElement
+  - Conditional navigation items can be based on pathname matching
+  - Blueprint shell uses .bp-app grid with 232px sidebar + main area
+---
+## Sun May 24 18:02 CDT 2026 - US-003
+- Created ADR-0001 documenting the CSS strategy decision to copy blueprint.css wholesale
+- Added Glossary section to architecture.md defining Equipment and Inbox vs Dashboard concepts
+- All documentation deliverables completed
+- **Files changed:** docs/adr/0001-css-strategy-blueprint.md (created), docs/architecture.md (updated)
+- **Learnings for future iterations:**
+  - ADR directory was created at docs/adr/ for architecture decision records
+  - Equipment is the UI alias for TestProcedureInstance + ExtractedSpec join (no Asset table in v0)
+  - Inbox and Dashboard are distinct concepts that must not be conflated
+  - Type-check command in frontend is `npm run type-check` (not `npm run typecheck`)
+---
