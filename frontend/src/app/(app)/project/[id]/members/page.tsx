@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { supabase, type DisciplineScope } from '@/lib/supabase'
-import { getMembersForProject, getPendingInvitesForProject, type ProjectMember, type PendingInvite } from '@/lib/members'
+import { getMembersForProject, getPendingInvitesForProject, updateDiscipline, type ProjectMember, type PendingInvite } from '@/lib/members'
 
 export default function MembersPage() {
   const params = useParams()
@@ -22,6 +22,7 @@ export default function MembersPage() {
   const [members, setMembers] = useState<ProjectMember[]>([])
   const [pendingInvites, setPendingInvites] = useState<PendingInvite[]>([])
   const [membersLoading, setMembersLoading] = useState(true)
+  const [updatingDiscipline, setUpdatingDiscipline] = useState<string | null>(null)
 
   // Check authentication and load disciplines
   useEffect(() => {
@@ -78,6 +79,22 @@ export default function MembersPage() {
       loadMembersData()
     }
   }, [projectId])
+
+  const handleDisciplineChange = async (userId: string, newDisciplineScopeId: string) => {
+    setUpdatingDiscipline(userId)
+    try {
+      await updateDiscipline(userId, projectId, newDisciplineScopeId)
+      
+      // Reload members to show the updated discipline
+      const membersData = await getMembersForProject(projectId)
+      setMembers(membersData)
+    } catch (error) {
+      console.error('Error updating discipline:', error)
+      setError('Failed to update discipline')
+    } finally {
+      setUpdatingDiscipline(null)
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -262,7 +279,23 @@ export default function MembersPage() {
                       {member.role}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {member.discipline_name || '-'}
+                      <select
+                        value={disciplines.find(d => d.name === member.discipline_name)?.id || ''}
+                        onChange={(e) => handleDisciplineChange(member.user_id, e.target.value)}
+                        disabled={updatingDiscipline === member.user_id || disciplines.length === 0}
+                        className="w-full px-2 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+                      >
+                        {disciplines.map((discipline) => (
+                          <option key={discipline.id} value={discipline.id}>
+                            {discipline.name}
+                          </option>
+                        ))}
+                        {!member.discipline_name && (
+                          <option value="" disabled>
+                            Select discipline
+                          </option>
+                        )}
+                      </select>
                     </td>
                   </tr>
                 ))}
