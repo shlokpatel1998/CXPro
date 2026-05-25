@@ -1,268 +1,285 @@
 # Ralph Progress Log
-Started: Sun May 24 13:39:19 CDT 2026
+Started: Sun May 24 17:47:23 CDT 2026
 
 ## Codebase Patterns
-- Slice-01 accounts already exist; credentials are in .env.local — scaffold code and deploy autonomously
-- Use VERCEL_TOKEN env var for `vercel` CLI deploys; RAILWAY_TOKEN for `railway` CLI deploys
-- Set GitHub Actions secrets with `gh secret set`
-- Use transactional database functions for multi-table operations (create_test_procedure_with_citations, create_inbox_item_from_agent_run)
-- DSPy modules with REQUIRED field annotations enforce mandatory outputs (citations)
-- LangGraph StateGraph pattern for agent workflow orchestration
-- Mock similarity functions in test migrations when real embeddings aren't needed
-- Supabase Realtime subscriptions: use channel naming pattern `table_${userId}` for user-specific updates
-- Auto-subscription pattern: use database triggers on participations table to auto-create subscriptions based on user role
-- Inbox items need action_state field (pending/acted/dismissed) for proper lifecycle management
-- Blueprint design: use CSS custom properties for theming; Archivo + JetBrains Mono fonts
-- TypeScript: handle Record<string, unknown> metadata with bracket notation access
-- React patterns: useCallback for functions in effect dependencies; conditional rendering with ternary for unknown types
+- Blueprint CSS uses .bp-* utility classes for consistent styling
+- Archivo is the primary font, JetBrains Mono for monospace elements
+- CSS variables --font-archivo and --font-jetbrains-mono expose the fonts
+- Always use styled-jsx for component-scoped Blueprint styles
+- AI elements use lightning bolt symbol (⚡) consistently
+- Status badges follow bp-status-* pattern (info/warning/error/success)
+- Equipment is UI alias for TestProcedureInstance + ExtractedSpec join
+- lib/ modules follow typed-export pattern with dedicated test files
+- Mock Supabase chains in tests with vi.mocked() as any pattern
+- Route groups use (app) parentheses syntax for layout inheritance
 
 ---
 
-## May 24 13:42 CDT 2026 - Slice-01 Assessment
-- Reviewed PRD and current codebase state
-- Confirmed Slice-01 requires manual account creation (Supabase, Vercel, Railway, Google AI Studio)
-- No existing Next.js or FastAPI infrastructure found in codebase
-- PRD explicitly states "The agent loop should NOT attempt account provisioning. Human completes this manually, marks passes:true, then starts the loop."
+## Sun May 24 17:50 CDT 2026 - US-001
+- Copied blueprint.css verbatim from frontend-design/ to frontend/src/styles/
+- Imported blueprint.css globally in layout.tsx
+- Added Archivo and JetBrains Mono fonts via next/font/google with CSS variables
+- Updated globals.css to use Archivo as the default body font
+- All existing pages still render correctly
+- **Files changed:** frontend/src/app/layout.tsx, frontend/src/app/globals.css, frontend/src/styles/blueprint.css
 - **Learnings for future iterations:**
-  - Always check for HITL flags in user story notes before starting work
-  - Slice-01 infrastructure setup is a prerequisite for all other slices
-  - The autonomous loop should wait for human to complete account provisioning before proceeding
+  - Blueprint CSS foundation now available with .bp-* utility classes
+  - Archivo font is now the primary font, JetBrains Mono available for monospace elements
+  - CSS variables are exposed for both fonts for easy usage
 ---
-
-## May 24 13:55 CDT 2026 - Slice-01 Autonomous Loop Status
-- Autonomous loop attempted to pick highest priority story (Slice-01)
-- Confirmed Slice-01 is marked HITL and requires manual human completion
-- No autonomous work possible until human completes account provisioning and marks Slice-01 as passes:true
+## Sun May 24 17:54 CDT 2026 - US-002
+- Created (app) route group with Blueprint shell layout
+- Implemented sidebar with Inbox, Projects nav items and theme toggle
+- Added conditional Equipment nav item that appears only in project context
+- Implemented topbar with breadcrumb navigation and user avatar
+- Moved dashboard, inbox, project, entity pages under (app) route group
+- Auth route remains outside the shell as required
+- Theme toggle persists to localStorage and updates data-theme attribute
+- **Files changed:** frontend/src/app/(app)/layout.tsx (created), moved existing pages to (app) directory
 - **Learnings for future iterations:**
-  - Autonomous loop correctly identifies HITL stories and waits for human intervention
-  - All subsequent slices (02-10) remain blocked until Slice-01 infrastructure is provisioned
-  - Loop should exit gracefully when encountering HITL blocker at highest priority
+  - Route groups in Next.js use parentheses syntax: (app)
+  - Theme persistence uses localStorage and data-theme attribute on documentElement
+  - Conditional navigation items can be based on pathname matching
+  - Blueprint shell uses .bp-app grid with 232px sidebar + main area
 ---
-
-## May 24 14:05 CDT 2026 - Slice-01 Status Check
-- Current iteration checked PRD status: all stories have passes:false
-- Slice-01 (highest priority) remains HITL requiring manual account creation
-- No changes to infrastructure since last iteration
+## Sun May 24 18:02 CDT 2026 - US-003
+- Created ADR-0001 documenting the CSS strategy decision to copy blueprint.css wholesale
+- Added Glossary section to architecture.md defining Equipment and Inbox vs Dashboard concepts
+- All documentation deliverables completed
+- **Files changed:** docs/adr/0001-css-strategy-blueprint.md (created), docs/architecture.md (updated)
 - **Learnings for future iterations:**
-  - Consistent HITL blocker pattern - human intervention required for Slice-01 account provisioning
-  - Agent correctly identifies and respects HITL boundaries per PRD instructions
-  - All development work dependent on successful Slice-01 completion by human operator
+  - ADR directory was created at docs/adr/ for architecture decision records
+  - Equipment is the UI alias for TestProcedureInstance + ExtractedSpec join (no Asset table in v0)
+  - Inbox and Dashboard are distinct concepts that must not be conflated
+  - Type-check command in frontend is `npm run type-check` (not `npm run typecheck`)
 ---
-
-## May 24 14:15 CDT 2026 - Slice-01 Infrastructure Assessment
-- Found environment variables configured in .env.local (Supabase, Gemini API, Database credentials)
-- No Next.js or FastAPI application code found in codebase (no package.json, main.py, requirements.txt)
-- No deployment configuration files found (vercel.json, railway.json, GitHub Actions workflows)
-- Slice-01 remains HITL requiring manual completion of infrastructure bootstrap and deployment
+## Sun May 24 18:05 CDT 2026 - US-004
+- Added Vitest test infrastructure to frontend
+- Installed vitest, @vitest/coverage-v8, @vitejs/plugin-react, and jsdom
+- Created vitest.config.ts with jsdom environment and TypeScript path resolution
+- Added test and test:watch scripts to package.json
+- Created smoke test at frontend/src/lib/__tests__/smoke.test.ts
+- **Files changed:** frontend/package.json, frontend/vitest.config.ts, frontend/src/lib/__tests__/smoke.test.ts
 - **Learnings for future iterations:**
-  - Environment variables are configured but applications not yet created/deployed
-  - Human still needs to complete the full infrastructure bootstrap per acceptance criteria
-  - Slice-01 passes:false indicates infrastructure deployment not yet complete
+  - Vitest requires @vitejs/plugin-react for React projects
+  - jsdom is required as a dependency when using jsdom environment in Vitest config
+  - Test command is `npm test` which runs `vitest run`, watch mode is `npm test:watch`
+  - Tests should be placed in __tests__ directories following the existing pattern
 ---
-
-## May 24 14:25 CDT 2026 - Slice-01 Infrastructure Status
-- Confirmed codebase still lacks required infrastructure components (no package.json, main.py, .github/ workflows)
-- Environment variables present in .env.local but applications not yet bootstrapped
-- Slice-01 remains HITL requiring manual completion per PRD explicit instructions
-- No autonomous work possible until human completes account provisioning and application bootstrap
+## Sun May 24 18:09 CDT 2026 - US-005
+- Restyled entity/[id]/page.tsx to use Blueprint three-panel layout
+- Removed duplicate sidebar (now handled by app layout)
+- Replaced all inline styles with Blueprint .bp-* utility classes
+- Implemented proper three-panel responsive layout (center content + right drawer)
+- Applied .bp-mono class to numbered step IDs for consistent typography
+- Added responsive reflow for mobile (drawer becomes bottom sheet <1024px)
+- Removed entity.css file as styles are now inline with styled-jsx
+- **Files changed:** frontend/src/app/(app)/entity/[id]/page.tsx (rewrote), deleted entity.css
 - **Learnings for future iterations:**
-  - Consistent infrastructure gap - applications need to be created before deployment can proceed
-  - Human intervention required for full Slice-01 acceptance criteria completion
-  - Autonomous loop correctly respects HITL boundaries and waits for infrastructure provisioning
+  - The app layout already handles the main sidebar, entity pages only need content + drawer
+  - Three-panel layout uses grid: 1fr 400px for desktop, stacks for mobile
+  - .bp-mono class must be applied for JetBrains Mono font on step numbers
+  - All Slice-08 behaviors preserved: citations clickable, drawer functional, status badges visible
 ---
-
-## May 24 15:30 CDT 2026 - Slice-01 Infrastructure Complete
-- Scaffolded complete Next.js frontend with TypeScript, Tailwind CSS, and ESLint 
-- Created FastAPI backend with health endpoint and basic tests
-- Set up GitHub Actions CI with typecheck, ESLint, and pytest quality checks
-- Configured eslint-plugin-boundaries with identity/ and commissioning/ context isolation
-- Updated README with comprehensive local dev setup and environment variable documentation
-- Configured GitHub Actions secrets for all required environment variables
-- Infrastructure ready for deployment (Vercel frontend, Railway backend)
-- All quality checks passing: TypeScript type-check ✓, ESLint ✓, pytest ✓
-- **Files changed:** frontend/, backend/, .github/workflows/ci.yml, README.md
+## Sun May 24 19:06 CDT 2026 - US-006
+- Verified AiChatDrawer and ActivityTab components already have Blueprint styling
+- Both components already use Blueprint .bp-* classes throughout
+- AI lightning bolt icon (⚡) already implemented in both components
+- AI Chat is default tab in entity page drawer as required
+- All acceptance criteria already met - components were pre-styled correctly
+- **Files changed:** No changes needed - components already properly styled
 - **Learnings for future iterations:**
-  - Infrastructure scaffolding completed successfully with all acceptance criteria met
-  - Quality gates are working: GitHub Actions will block PRs with failing tests
-  - eslint-plugin-boundaries enforces architectural boundaries between contexts
-  - Backend health endpoint available at /health for monitoring
-  - All deployment credentials and secrets properly configured for CI/CD pipeline
+  - Always check if work might already be done before making changes
+  - AiChatDrawer and ActivityTab inject their own styles via style tags
+  - Components follow the Blueprint pattern from blueprint-app.jsx::AiPanel
+  - Entity page uses bp-drawer-tabs and bp-drawer-content for tab switching
 ---
-
-## May 24 19:15 CDT 2026 - Slice-02 Complete
-- Successfully implemented Supabase Auth with complete party model (orgs, users, memberships, projects, participations, assignments, discipline_scopes)
-- Created comprehensive Row Level Security (RLS) policies ensuring cross-org isolation
-- Built sign-up/sign-in frontend UI with full org/project creation and management flows
-- Implemented invite-by-email functionality with role-based access control
-- Applied database migrations with auto-triggers for seamless user onboarding
-- All acceptance criteria met and verified through testing
-- **Files changed:** migrations/001_party_model.sql, frontend/src/lib/supabase.ts, frontend/src/app/auth/page.tsx, frontend/src/app/dashboard/page.tsx, frontend/src/components/auth/, backend/requirements.txt, backend/test_rls.py, backend/apply_migration.py
+## Sun May 24 19:08 CDT 2026 - US-007
+- Verified CitationChip and CommandPalette components already properly restyled
+- Both components already use Blueprint .bp-* classes throughout
+- CitationChip uses .bp-citation-* classes with Blueprint styling
+- CommandPalette uses .bp-cmd-* classes for all elements
+- All acceptance criteria already met: Cmd-K opens palette, citations clickable with PDF opening
+- **Files changed:** No changes needed - components were already properly styled
 - **Learnings for future iterations:**
-  - Supabase RLS policies work correctly for multi-tenant isolation - each user can only see data from their own organization
-  - Database functions (create_org_with_membership, invite_user_by_email) simplify complex multi-table operations
-  - TypeScript types for database schema improve development experience and catch errors early
-  - ESLint boundaries plugin successfully prevents cross-context imports, enforcing architectural boundaries
-  - Auto-triggers on auth.users table ensure seamless user profile creation on signup
-  - Party model with orgs->memberships->projects->discipline_scopes provides proper hierarchical access control
+  - Always verify if work might already be complete before making changes
+  - CitationChip properly opens PDFs at page coordinates with bbox highlighting
+  - CommandPalette searches Projects, Documents, and TestProcedureInstances
+  - Keyboard shortcuts (Cmd-K) properly preserved in entity page
 ---
-
-## May 24 19:25 CDT 2026 - Slice-03 Complete
-- Successfully implemented PDF upload flow with Supabase Storage and real-time status tracking
-- Created documents table with comprehensive status tracking (uploaded/processing/indexed/failed)
-- Implemented transactional outbox pattern ensuring document creation and event emission happen atomically
-- Built project-specific UI with PDF upload functionality restricted to OCA role
-- Added file validation preventing non-PDF uploads and files >25MB before any database writes
-- Set up Supabase Storage bucket with proper RLS policies ensuring cross-org document isolation
-- Implemented real-time status updates via Supabase Realtime for live UI feedback without page refresh
-- Created comprehensive TypeScript types for type-safe document management
-- All acceptance criteria verified: OCA upload workflow, file validation, transactional consistency, RLS isolation
-- **Files changed:** migrations/002_documents_outbox.sql, frontend/src/app/project/[id]/page.tsx, frontend/src/lib/storage.ts, frontend/src/lib/supabase.ts, backend/setup_storage.py, backend/verify_rls_policies.py
+## Sun May 24 19:15 CDT 2026 - US-008
+- Created lib/dashboard.ts with getProjectDashboard function
+- Implemented DashboardSummary type with status_counts, recent_agent_runs, and document_count
+- Query joins agent_runs to test_procedure_instances to get project-scoped agent runs
+- Gets latest 5 agent runs ordered by created_at descending
+- Follows typed-export pattern from storage.ts module
+- **Files changed:** frontend/src/lib/dashboard.ts (created)
 - **Learnings for future iterations:**
-  - Transactional outbox pattern with database functions ensures consistency between document records and events
-  - Supabase Storage RLS policies provide file-level security isolation based on project membership
-  - Real-time subscriptions work seamlessly with table updates for live UI feedback
-  - File validation at multiple layers (client + server) provides robust error handling
-  - Project-specific pages with role-based access control create intuitive user workflows
-  - Database functions (create_document_with_outbox) simplify complex transactional operations
+  - Supabase joins use !inner syntax for foreign key relationships
+  - Count queries use { count: 'exact', head: true } options
+  - Agent runs are linked to projects through test_procedure_instances table
+  - Use `any` type for complex Supabase join results to avoid TypeScript issues
 ---
-
-## May 24 19:35 CDT 2026 - Slice-04 Complete
-- Successfully implemented transactional outbox dispatcher system with NOTIFY/LISTEN + fallback polling
-- Built PostgreSQL infrastructure with triggers for automatic event notifications to subscribers
-- Created Python outbox dispatcher with asyncio support for exactly-once event processing per subscriber
-- Built Next.js outbox dispatcher with TypeScript types and proper error handling
-- Implemented idempotency via outbox_dispatches table preventing duplicate event processing
-- Added subscriber registry pattern allowing contexts to register (event_type, handler) at startup
-- Created comprehensive verification tests confirming all acceptance criteria including 100+ concurrent events
-- Built database functions for efficient event processing queries with proper parameter isolation
-- All quality checks pass: Python pytest, TypeScript type-check, ESLint
-- **Files changed:** migrations/003_outbox_dispatcher.sql, backend/outbox_dispatcher.py, backend/apply_outbox_migration.py, backend/verify_outbox_dispatcher.py, backend/test_outbox_dispatcher.py, backend/requirements.txt, frontend/src/lib/outbox-dispatcher.ts, frontend/scripts/start-dispatcher.ts, frontend/package.json
+## Sun May 24 19:15 CDT 2026 - US-009
+- Created comprehensive unit tests for lib/dashboard.ts using Vitest
+- Implemented typed in-memory fake for Supabase client with no live network calls
+- Test coverage includes: status_counts grouping, recent_agent_runs ordering and limiting, document_count aggregation
+- Mock handles complex join queries between agent_runs and test_procedure_instances tables
+- All 7 test cases pass covering edge cases including null statuses and empty data
+- **Files changed:** frontend/src/lib/__tests__/dashboard.test.ts (created)
 - **Learnings for future iterations:**
-  - PostgreSQL NOTIFY/LISTEN provides real-time event delivery (sub-2s) with fallback polling (30s) for reliability
-  - outbox_dispatches table with (outbox_id, subscriber_name) unique constraint ensures exactly-once delivery per subscriber
-  - Subscriber registry pattern allows different contexts to register handlers for specific event types
-  - Database function parameter naming must avoid conflicts with table columns (use p_ prefix)
-  - Both Python (asyncpg) and Next.js (postgres) workers can process events independently with proper idempotency
-  - Unknown event types are gracefully handled by logging and marking as dispatched to prevent queue blockage
+  - Mock Supabase from() method returns a chain of methods - must mock entire chain
+  - Use 'as any' type casting for vi.mocked() to avoid TypeScript issues with complex mock chains
+  - Count queries in Supabase use select('id', { count: 'exact', head: true }) pattern
+  - Test data relationships carefully - agent_runs filter through joined test_procedure_instances
 ---
-
-## May 24 19:45 CDT 2026 - Slice-05 Complete
-- Successfully implemented complete PDF ingestion pipeline for submittal cut sheet processing
-- Created DSPy document type detector returning enum values (not strings) to prevent parsing issues
-- Built PDF chunker with PyMuPDF that extracts text chunks with positioning metadata (bbox coordinates)
-- Implemented pgvector embeddings integration with OpenAI ada-002 for semantic similarity search
-- Created DSPy ExtractedSpec extractor with REQUIRED citations - enforces citation requirement or refuses extraction
-- Set up outbox subscriber pattern consuming DocumentUploaded events with idempotent processing
-- Applied database migration 004_pdf_ingestion.sql with document_chunks and extracted_specs tables
-- Enabled pgvector extension and created search_document_chunks similarity function
-- Built comprehensive validation ensuring citations are mandatory for spec extraction
-- All acceptance criteria met: typed DSPy modules, pgvector similarity queries, transactional status updates
-- **Files changed:** migrations/004_pdf_ingestion.sql, backend/document_detector.py, backend/pdf_chunker.py, backend/spec_extractor.py, backend/ingestion_pipeline.py, backend/apply_ingestion_migration.py, backend/test_slice_05.py, backend/requirements.txt
+## Sun May 24 19:20 CDT 2026 - US-010
+- Created UploadModal component with Blueprint styling  
+- Reused validateFile, generateStoragePath, and uploadPDF from lib/storage.ts
+- Modal validates PDF and 25MB size limit before upload
+- Uses existing document_uploaded outbox event flow via uploadPDF
+- Styled with Blueprint .bp-* classes and CSS-in-JS
+- Modal overlay, transitions, and responsive design implemented
+- **Files changed:** frontend/src/components/UploadModal.tsx (created)
 - **Learnings for future iterations:**
-  - DSPy modules must declare citations as REQUIRED in signature to enforce proper extraction validation
-  - pgvector extension enables efficient semantic search with cosine similarity on 1536-dimensional embeddings
-  - Document status transitions: uploaded -> processing -> indexed (success) or failed (with failure_reason)
-  - PyMuPDF (fitz) provides reliable PDF text extraction with page coordinate metadata for citations
-  - Outbox subscriber pattern ensures exactly-once processing of DocumentUploaded events with proper idempotency
-  - Database functions with pgvector enable efficient similarity queries with RLS-enforced access control
-  - DSPy extractor confidence thresholds (>0.6) help ensure quality while allowing AI refusal for low-confidence extractions
+  - uploadPDF from lib/storage.ts already handles the document_uploaded outbox event
+  - Blueprint modals use overlay pattern with stopPropagation on modal content
+  - CSS-in-JS with styled-jsx works well for component-scoped Blueprint styles
+  - File validation should happen on select, not just on upload
 ---
-
-## May 24 20:45 CDT 2026 - Slice-06 Complete
-- Successfully implemented CxExecutionAgent (LangGraph) that consumes DocumentIndexed events and generates L2 checklists
-- Created DSPy GenerateL2Checklist module with REQUIRED citations - enforces citations or refuses generation
-- Built comprehensive database schema: agent_runs for audit trail, test_procedure_instances for drafts, citations table
-- Implemented confidence-based refusal path - emits AIRefusal event when document chunks have low similarity
-- Added transactional create_test_procedure_with_citations function ensuring atomic draft + citations creation
-- AgentRunCompleted and AIRefusal events properly emitted to outbox for downstream consumption
-- **Files changed:** migrations/005_agent_execution.sql, backend/cx_execution_agent.py, backend/generate_checklist.py, backend/test_slice_06.py, backend/apply_agent_migration.py, backend/requirements.txt
+## Sun May 24 19:26 CDT 2026 - US-011
+- Rewrote project/[id]/page.tsx as Blueprint Dashboard using getProjectDashboard from lib/dashboard.ts
+- Integrated UploadModal component with "Upload submittal" button in top-right for OCA users
+- Dashboard displays project name, TPI status counts, recent AgentRuns list, and document count
+- Implemented three stat cards: Equipment Progress (with percentage), Equipment Status, and Documents
+- Added Recent Agent Activity section showing latest 5 agent runs with AI lightning bolt icons
+- Preserved Realtime subscriptions for TPIs, agent_runs, and documents to auto-update dashboard
+- All styled with Blueprint .bp-* classes matching blueprint-app.jsx::DashboardScreen pattern
+- **Files changed:** frontend/src/app/(app)/project/[id]/page.tsx (complete rewrite)
 - **Learnings for future iterations:**
-  - LangGraph StateGraph provides clean workflow orchestration for multi-step agent processes
-  - DSPy REQUIRED field declarations enforce citation requirements with automatic retry logic
-  - Agent confidence thresholds (>0.7 similarity) help ensure quality while allowing graceful refusal
-  - Transactional database functions ensure consistency between test procedures and citations
-  - Mock search_document_chunks function sufficient for testing without real embeddings
-  - Agent audit trail (agent_runs) captures full execution context for debugging and compliance
+  - Dashboard uses getProjectDashboard function for all data fetching - no direct queries
+  - Real-time updates require three separate channel subscriptions for TPIs, agent_runs, and documents
+  - styled-jsx works well for component-scoped Blueprint styling
+  - bp-stat-card pattern with progress bars uses absolute positioning for the bar
+  - Status badges follow bp-status-* pattern with success/warning/error/neutral variants
 ---
-
-## May 24 15:52 CDT 2026 - Slice-07 Complete
-- Successfully implemented Inbox-as-home feature with subscriptions and real-time updates
-- Created database migration 006_inbox_subscriptions.sql with subscriptions and inbox_items tables
-- Built backend inbox_subscriber.py to process AgentRunCompleted and AIRefusal events
-- Implemented frontend inbox page with Realtime subscription for live updates
-- Added auto-subscription logic triggered when OCA users join projects (via participation creation)
-- Created distinct UI treatments for AI draft items vs AI refusal items (different CTAs and badges)
-- Implemented RLS policies ensuring users only see their own inbox items
-- Created placeholder entity detail page for navigation from inbox items (full implementation in Slice-08)
-- All quality checks passing: TypeScript type-check ✓, ESLint ✓, pytest ✓
-- **Files changed:** migrations/006_inbox_subscriptions.sql, backend/inbox_subscriber.py, backend/apply_inbox_migration.py, backend/test_inbox_slice07.py, frontend/src/app/inbox/page.tsx, frontend/src/app/entity/[id]/page.tsx, frontend/src/app/page.tsx
+## Sun May 24 19:28 CDT 2026 - US-012
+- Created lib/equipment.ts with getEquipmentForProject function
+- Implemented EquipmentRow type with all required fields (tpi_id, asset_tag, equipment_type, manufacturer, model, status)
+- Query left-joins test_procedure_instances to extracted_specs with fallback logic
+- Uses extracted_specs manufacturer/model when available, falls back to TPI fields if not
+- Created comprehensive unit tests in __tests__/equipment.test.ts
+- All tests pass (4 test cases covering all scenarios)
+- **Files changed:** frontend/src/lib/equipment.ts (created), frontend/src/lib/__tests__/equipment.test.ts (created)
 - **Learnings for future iterations:**
-  - Supabase Realtime channels can be scoped to specific user IDs for personalized notifications
-  - Database functions (create_inbox_item_from_agent_run) simplify complex inbox item creation logic
-  - Auto-subscription triggers on participations table work well for role-based event routing
-  - Inbox items should have action_state (pending/acted/dismissed) for proper lifecycle management
-  - AI refusal events need distinct UI treatment with "Upload more docs" CTA instead of "Review draft"
-  - Testing with real auth.users is required due to foreign key constraints (can't create mock users easily)
+  - Equipment is the join of test_procedure_instances + extracted_specs tables
+  - Left join pattern ensures rows without extracted_specs still appear (in-progress ingestion)
+  - Priority logic: use extracted_specs data if available, otherwise use TPI data, otherwise null
+  - Follows same typed-export pattern as storage.ts and dashboard.ts modules
 ---
-
-## May 24 16:13 CDT 2026 - Slice-08 Complete
-- Successfully implemented entity detail page with three-panel layout per architecture §4.2
-- Created comprehensive UI components: CitationChip, AiChatDrawer, ActivityTab, CommandPalette
-- Applied Blueprint visual design tokens (Archivo + JetBrains Mono fonts, blue+cream palette)
-- Implemented responsive design (desktop >=1024px three panels, <1024px single-scroll)
-- Added citation chips with PDF deep-linking (page + bbox coordinates)
-- Created AI Chat drawer with grounded responses and inline citations
-- Built Activity tab showing AgentRun entries with AI lightning-bolt glyph distinguishing AI from human
-- Implemented Cmd-K palette for searching Projects + Documents by name
-- Added audit_log_entries and feedback_records tables (migration 007_audit_feedback.sql)
-- **Files changed:** frontend/src/app/entity/[id]/page.tsx, frontend/src/app/entity/[id]/entity.css, frontend/src/components/CitationChip.tsx, frontend/src/components/AiChatDrawer.tsx, frontend/src/components/ActivityTab.tsx, frontend/src/components/CommandPalette.tsx, frontend/src/app/inbox/page.tsx, migrations/007_audit_feedback.sql
+## Sun May 24 19:31 CDT 2026 - US-013
+- Updated equipment.test.ts with comprehensive test coverage
+- Added typed in-memory fake for Supabase client (no live network calls)
+- Test coverage includes all required scenarios:
+  - Returns rows for a project the user can access
+  - Returns empty for a project in another org (RLS-scoping behavior)
+  - Returns row with null metadata fields when ExtractedSpec missing
+  - Returns empty when no TPIs exist
+  - Handles database errors appropriately
+- All 5 test cases pass
+- **Files changed:** frontend/src/lib/__tests__/equipment.test.ts (updated)
 - **Learnings for future iterations:**
-  - Blueprint design system uses CSS custom properties for consistent theming across light/dark modes
-  - TypeScript strict mode requires explicit handling of Record<string, unknown> metadata fields
-  - React Hook dependencies need careful management to avoid ESLint warnings (useCallback for functions in deps)
-  - Responsive drawer pattern: fixed right panel on desktop, bottom sheet on mobile
-  - Citation deep-linking requires signed URLs from Supabase Storage for PDF access
-  - Activity feed pattern: combine multiple data sources (agent_runs, test_procedure_instances) into unified timeline
+  - RLS policies return empty arrays for unauthorized access, not errors
+  - Test names should match acceptance criteria language exactly
+  - In-memory fakes prevent network calls during testing
+  - Mock chain pattern needed for Supabase's fluent API (.from().select().eq().order())
 ---
-
-## May 24 16:23 CDT 2026 - Slice-09 Complete
-- Successfully implemented Accept draft functionality with complete state transition and audit trail
-- Created database function accept_draft_test_procedure for atomic draft->active transition with audit logging
-- Implemented Accept button in entity detail page with OCA role-gating (hidden from cx_engineer users)
-- Added feedback UI (thumb up/down) to both AiChatDrawer messages and ActivityTab AgentRun cards
-- Created database function record_feedback for capturing user feedback on AI outputs
-- Updated inbox items to transition to 'acted' state when draft is accepted
-- Implemented TestProcedureInstanceActivated event emission to outbox for downstream processing
-- Refusal variant UI already present from Slice-08 (shows refusal card with reason and 'provide more info' CTA)
-- Created comprehensive integration test covering full pipeline from document upload through acceptance (Slices 3-9)
-- Applied migrations 007_audit_feedback.sql and 008_accept_draft.sql to production database
-- All quality checks passing: TypeScript type-check ✓, ESLint ✓, Integration tests ✓
-- **Files changed:** migrations/008_accept_draft.sql, frontend/src/app/entity/[id]/page.tsx, frontend/src/components/AiChatDrawer.tsx, frontend/src/components/ActivityTab.tsx, backend/test_slice_09_integration.py, backend/apply_accept_migration.py
+## Sun May 24 19:35 CDT 2026 - US-014
+- Created project/[id]/equipment/page.tsx as Blueprint EquipmentScreen
+- Implemented EquipGlyph component with icons for different equipment types (AHU, Chiller, Pump, Boiler, default)
+- Implemented ProgCell component to show equipment status (0%, 50%, 100%, done checkmark)
+- Equipment page fetches data using getEquipmentForProject from lib/equipment.ts
+- Table-like grid layout with columns: tag, type, manufacturer, model, status
+- Each row links to /entity/<tpi_id> for ChecklistDetail view
+- Styled entirely with Blueprint .bp-* classes and styled-jsx
+- Handles loading, error, and empty states appropriately
+- **Files changed:** frontend/src/app/(app)/project/[id]/equipment/page.tsx (created)
 - **Learnings for future iterations:**
-  - Database functions (accept_draft_test_procedure, record_feedback) provide transactional consistency for complex operations
-  - Feedback UI pattern: inline buttons on AI-generated content with optional text input for negative feedback
-  - Role-based UI elements: OCA-specific actions should check user.role === 'OCA' before rendering
-  - Integration tests should handle cleanup gracefully even when test fails partway through
-  - Supabase RPC calls work well for invoking database functions from frontend
-  - Audit trail pattern: combine audit_log_entries table with confirmed_ai_run_id field to track human confirmations of AI work
-  - Inbox lifecycle: pending -> acted state transition removes items from daily view while preserving history
+  - Equipment icons are SVG components defined inline to match blueprint-app.jsx
+  - Status progress uses bp-prog classes with inline width style for percentage bars
+  - Equipment table uses CSS Grid with fixed column widths for consistent layout
+  - Links wrapped around entire row for better UX (full row clickable)
+  - Supabase client is imported as named export `supabase` from lib/supabase.ts
 ---
-
-## May 24 16:40 CDT 2026 - Slice-10 Complete
-- Successfully implemented EvalRun harness that gates CI on AI quality
-- Created 10 seed fixtures with realistic submittal PDF data and expected outputs
-- Built pytest test harness (test_cx_execution.py) that runs fixtures through AI pipeline
-- Created eval_runs database schema for tracking evaluation results over time
-- Implemented GitHub Action (ai-eval.yml) that blocks PRs on >10% quality regression
-- Established baseline metrics (80% pass rate, 75% citation recall, 75% checklist coverage)
-- Created comprehensive README documenting the add-fixture workflow for data-network-effect
-- All acceptance criteria met: fixtures created, pytest harness working, CI configured, regression detection active
-- **Files changed:** backend/ai_service/eval/, .github/workflows/ai-eval.yml, migrations/009_eval_runs.sql, backend/apply_eval_migration.py
+## Sun May 24 21:35 CDT 2026 - US-015
+- Equipment sidebar nav item was already implemented in US-002
+- Verified conditional rendering logic: item appears only when pathname starts with /project/
+- Equipment nav links correctly to /project/[projectId]/equipment
+- Active state properly handled with bp-nav-active class
+- All acceptance criteria already met - no changes needed
+- **Files changed:** None - functionality already implemented
 - **Learnings for future iterations:**
-  - Data-network-effect pattern: every production correction becomes a test fixture
-  - Evaluation framework prevents AI quality regressions from reaching production
-  - Baseline metrics tracked per branch enable safe experimentation
-  - GitHub Actions can post PR comments with evaluation results for visibility
-  - Fixtures should include realistic submittal content with expected spec extraction and checklist items
-  - 10% regression tolerance allows minor variations while catching significant drops
+  - Check if work might already be complete before making changes
+  - US-002 shell layout implementation was comprehensive and included project-scoped nav
+  - Equipment nav item correctly uses isProjectRoute condition for visibility
+---
+## Sun May 24 21:40 CDT 2026 - US-016
+- Created lib/projects.ts module with getProjectsForUser function
+- Implemented ProjectCard type with all required fields (project_id, name, org_name, description, created_at)
+- Query joins projects to orgs table to get organization name
+- RLS policies ensure only projects the user has membership access to are returned
+- Follows typed-export pattern from lib/storage.ts and lib/dashboard.ts
+- **Files changed:** frontend/src/lib/projects.ts (created)
+- **Learnings for future iterations:**
+  - Projects are linked to organizations via org_id foreign key
+  - Supabase join syntax uses !inner for required joins
+  - RLS (Row Level Security) automatically filters results based on user's membership
+  - Order projects by created_at descending to show newest first
+---
+## Sun May 24 21:43 CDT 2026 - US-017
+- Created comprehensive unit tests for lib/projects.ts using Vitest
+- Implemented typed in-memory fake for Supabase client with no live network calls
+- Test coverage includes all required scenarios:
+  - User in one org sees only that org's projects
+  - User in two orgs sees projects from both
+  - User with no memberships sees empty list
+  - Database error handling
+  - Empty database case
+- All 5 test cases pass
+- **Files changed:** frontend/src/lib/__tests__/projects.test.ts (created)
+- **Learnings for future iterations:**
+  - Mock Supabase chains require mocking select().order() pattern for projects queries
+  - Simulate RLS by filtering based on membership data in mock
+  - Test names should match acceptance criteria language exactly
+  - Projects are sorted by created_at descending in the actual implementation
+---
+## Sun May 24 21:46 CDT 2026 - US-018
+- Created /projects route (Blueprint ProjectsScreen) using getProjectsForUser
+- Implemented ProjectThumb SVG component matching blueprint-app.jsx pattern
+- Created Blueprint card grid layout with project tiles
+- Each card links to /project/[project_id] dashboard page
+- Projects sidebar nav item already correctly linked to /projects from US-002
+- Styled entirely with Blueprint .bp-* classes and styled-jsx
+- Handles loading, error, and empty states appropriately
+- **Files changed:** frontend/src/app/(app)/projects/page.tsx (created)
+- **Learnings for future iterations:**
+  - ProjectThumb SVG uses different color palettes rotated by project index
+  - Blueprint card grid uses auto-fill with minmax for responsive layout
+  - Projects page shows org name and description as metadata
+  - Projects nav already configured correctly in shell layout from US-002
+---
+## Sun May 24 21:49 CDT 2026 - US-019
+- Restyled /inbox page with Blueprint .bp-* classes replacing all Tailwind
+- Daily-bucket layout preserved with "Today's Items" header
+- InboxItem cards styled with AI lightning bolt badge (⚡) for AI drafts
+- AI-refusal variant styling with warning badge and border accent
+- Empty state message: "Nothing needs your attention. Upload a document to get started."
+- Realtime push behavior fully preserved (no page refresh required)
+- All Slice-07 acceptance behaviors maintained
+- **Files changed:** frontend/src/app/(app)/inbox/page.tsx (restyled)
+- **Learnings for future iterations:**
+  - AI badge uses lightning bolt symbol (⚡) consistently across the app
+  - Status badges follow bp-status-* pattern with info/warning/error variants
+  - Refusal cards use border-left accent with warning color
+  - styled-jsx is the pattern for component-scoped Blueprint styles
 ---
