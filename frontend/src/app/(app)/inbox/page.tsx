@@ -150,156 +150,343 @@ export default function InboxPage() {
     }
   }
 
-  const getItemIcon = (itemType: string) => {
-    switch (itemType) {
-      case 'ai_draft':
-        return '🤖'
-      case 'ai_refusal':
-        return '⚠️'
-      default:
-        return '📋'
-    }
-  }
+  const getAiBadge = () => (
+    <span className="bp-ai-badge">⚡</span>
+  )
 
   if (loading) {
-    return <div className="min-h-screen bg-gray-50 flex items-center justify-center">Loading...</div>
+    return (
+      <div className="bp-screen">
+        <div className="bp-loading">Loading inbox...</div>
+      </div>
+    )
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-6">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">Inbox</h1>
-              <p className="text-sm text-gray-600 mt-1">Your action items across all projects</p>
-            </div>
-            <div className="flex items-center space-x-4">
-              <button
-                onClick={() => router.push('/dashboard')}
-                className="text-gray-600 hover:text-gray-900"
-              >
-                Dashboard
-              </button>
-              <span className="text-sm text-gray-600">{user?.email}</span>
-              <button
-                onClick={async () => {
-                  await supabase.auth.signOut()
-                  router.push('/auth')
-                }}
-                className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
-              >
-                Sign Out
-              </button>
-            </div>
-          </div>
+    <div className="bp-screen">
+      <div className="bp-page-head">
+        <div>
+          <div className="bp-eyebrow">— INBOX</div>
+          <h1 className="bp-h1">Your action items</h1>
+          <div className="bp-subtle">Across all projects</div>
         </div>
-      </header>
+      </div>
 
-      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        <div className="px-4 py-6 sm:px-0">
-          {inboxItems.length === 0 ? (
-            <div className="bg-white overflow-hidden shadow rounded-lg p-12 text-center">
-              <div className="text-gray-400 mb-4">
-                <svg className="mx-auto h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
-                </svg>
-              </div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">Nothing needs your attention</h3>
-              <p className="text-gray-600 mb-6">Upload a document to get started.</p>
-              <button
-                onClick={() => router.push('/dashboard')}
-                className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700"
-              >
-                Go to Dashboard
-              </button>
+      <div className="bp-inbox-content">
+        {inboxItems.length === 0 ? (
+          <div className="bp-empty-state">
+            <div className="bp-empty-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <path d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+              </svg>
             </div>
-          ) : (
-            <div className="space-y-4">
-              {/* Daily bucket header */}
-              <div className="text-sm font-medium text-gray-500 uppercase tracking-wide">
-                Today&apos;s Items
-              </div>
+            <h3 className="bp-empty-title">Nothing needs your attention</h3>
+            <p className="bp-empty-text">Upload a document to get started.</p>
+          </div>
+        ) : (
+          <div className="bp-inbox-items">
+            {/* Daily bucket header */}
+            <div className="bp-bucket-header">
+              Today&apos;s Items
+            </div>
+            
+            {/* Inbox items */}
+            {inboxItems.map((item) => {
+              const project = projects.get(item.project_id)
+              const isRefusal = item.item_type === 'ai_refusal'
               
-              {/* Inbox items */}
-              {inboxItems.map((item) => {
-                const project = projects.get(item.project_id)
-                const isRefusal = item.item_type === 'ai_refusal'
-                
-                return (
-                  <div
-                    key={item.id}
-                    className="bg-white overflow-hidden shadow rounded-lg hover:shadow-md transition-shadow"
-                  >
-                    <div className="p-6">
-                      <div className="flex items-start justify-between">
-                        <div className="flex items-start space-x-4">
-                          <div className="text-2xl">{getItemIcon(item.item_type)}</div>
-                          <div className="flex-1">
-                            <div className="flex items-center space-x-2">
-                              <h3 className="text-lg font-medium text-gray-900">{item.title}</h3>
-                              {item.item_type === 'ai_draft' && (
-                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                  AI Draft
-                                </span>
-                              )}
-                              {item.item_type === 'ai_refusal' && (
-                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
-                                  Needs Info
-                                </span>
-                              )}
-                            </div>
-                            
-                            <p className="text-gray-600 mt-1">{item.description}</p>
-                            
-                            <div className="mt-3 flex items-center space-x-4 text-sm text-gray-500">
-                              {project && (
-                                <span>Project: {project.name}</span>
-                              )}
-                              {(() => {
-                                const assetTag = item.metadata?.['asset_tag']
-                                if (assetTag) {
-                                  return <span>Asset: {String(assetTag)}</span>
-                                }
-                                return null
-                              })()}
-                              {(() => {
-                                const documentName = item.metadata?.['document_name']
-                                if (documentName) {
-                                  return <span>Source: {String(documentName)}</span>
-                                }
-                                return null
-                              })()}
-                            </div>
-                          </div>
+              return (
+                <div
+                  key={item.id}
+                  className={`bp-inbox-card ${isRefusal ? 'bp-refusal' : ''}`}
+                >
+                  <div className="bp-inbox-card-body">
+                    <div className="bp-inbox-card-content">
+                      {item.item_type === 'ai_draft' && getAiBadge()}
+                      <div className="bp-inbox-card-main">
+                        <div className="bp-inbox-card-header">
+                          <h3 className="bp-inbox-card-title">{item.title}</h3>
+                          {item.item_type === 'ai_draft' && (
+                            <span className="bp-status-badge bp-status-info">
+                              AI Draft
+                            </span>
+                          )}
+                          {item.item_type === 'ai_refusal' && (
+                            <span className="bp-status-badge bp-status-warning">
+                              Needs Info
+                            </span>
+                          )}
                         </div>
                         
-                        <div className="ml-4">
-                          {isRefusal ? (
-                            <button
-                              onClick={() => handleUploadMoreDocs(item)}
-                              className="bg-amber-600 text-white px-4 py-2 rounded hover:bg-amber-700"
-                            >
-                              Upload more docs
-                            </button>
-                          ) : (
-                            <button
-                              onClick={() => handleReviewDraft(item)}
-                              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-                            >
-                              Review draft
-                            </button>
+                        {item.description && (
+                          <p className="bp-inbox-card-desc">{item.description}</p>
+                        )}
+                        
+                        <div className="bp-inbox-card-meta">
+                          {project && (
+                            <span>Project: {project.name}</span>
                           )}
+                          {(() => {
+                            const assetTag = item.metadata?.['asset_tag']
+                            if (assetTag) {
+                              return (
+                                <>
+                                  <span className="bp-dot"/>
+                                  <span>Asset: {String(assetTag)}</span>
+                                </>
+                              )
+                            }
+                            return null
+                          })()}
+                          {(() => {
+                            const documentName = item.metadata?.['document_name']
+                            if (documentName) {
+                              return (
+                                <>
+                                  <span className="bp-dot"/>
+                                  <span>Source: {String(documentName)}</span>
+                                </>
+                              )
+                            }
+                            return null
+                          })()}
                         </div>
                       </div>
                     </div>
+                    
+                    <div className="bp-inbox-card-action">
+                      {isRefusal ? (
+                        <button
+                          onClick={() => handleUploadMoreDocs(item)}
+                          className="bp-btn-warning"
+                        >
+                          Upload more docs
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => handleReviewDraft(item)}
+                          className="bp-btn-primary"
+                        >
+                          Review draft
+                        </button>
+                      )}
+                    </div>
                   </div>
-                )
-              })}
-            </div>
-          )}
-        </div>
-      </main>
+                </div>
+              )
+            })}
+          </div>
+        )}
+      </div>
+
+      <style jsx>{`
+        .bp-screen {
+          padding: 32px;
+          max-width: 1200px;
+          margin: 0 auto;
+        }
+
+        .bp-page-head {
+          margin-bottom: 48px;
+        }
+
+        .bp-eyebrow {
+          font-size: 11px;
+          text-transform: uppercase;
+          letter-spacing: 0.15em;
+          color: var(--bp-text-secondary);
+          margin-bottom: 12px;
+        }
+
+        .bp-h1 {
+          font-size: 32px;
+          font-weight: 600;
+          margin: 0;
+          color: var(--bp-text);
+        }
+
+        .bp-subtle {
+          font-size: 14px;
+          color: var(--bp-text-tertiary);
+          margin-top: 8px;
+        }
+
+        .bp-loading {
+          text-align: center;
+          padding: 60px 20px;
+          color: var(--bp-text-secondary);
+        }
+
+        .bp-empty-state {
+          text-align: center;
+          padding: 80px 20px;
+          background: var(--bp-surface);
+          border: 1px solid var(--bp-border);
+          border-radius: 8px;
+        }
+
+        .bp-empty-icon {
+          width: 48px;
+          height: 48px;
+          margin: 0 auto 24px;
+          color: var(--bp-text-tertiary);
+        }
+
+        .bp-empty-title {
+          font-size: 18px;
+          font-weight: 600;
+          color: var(--bp-text);
+          margin-bottom: 8px;
+        }
+
+        .bp-empty-text {
+          color: var(--bp-text-secondary);
+          margin: 0;
+        }
+
+        .bp-inbox-items {
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+        }
+
+        .bp-bucket-header {
+          font-size: 11px;
+          font-weight: 600;
+          text-transform: uppercase;
+          letter-spacing: 0.1em;
+          color: var(--bp-text-tertiary);
+          margin-bottom: 8px;
+        }
+
+        .bp-inbox-card {
+          background: var(--bp-surface);
+          border: 1px solid var(--bp-border);
+          border-radius: 8px;
+          transition: all 0.2s;
+        }
+
+        .bp-inbox-card:hover {
+          border-color: var(--bp-accent);
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .bp-inbox-card.bp-refusal {
+          border-left: 3px solid var(--bp-warning);
+        }
+
+        .bp-inbox-card-body {
+          padding: 20px;
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-start;
+          gap: 20px;
+        }
+
+        .bp-inbox-card-content {
+          flex: 1;
+          display: flex;
+          gap: 12px;
+        }
+
+        .bp-ai-badge {
+          font-size: 20px;
+          color: var(--bp-accent);
+        }
+
+        .bp-inbox-card-main {
+          flex: 1;
+        }
+
+        .bp-inbox-card-header {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          margin-bottom: 8px;
+        }
+
+        .bp-inbox-card-title {
+          font-size: 16px;
+          font-weight: 600;
+          color: var(--bp-text);
+          margin: 0;
+        }
+
+        .bp-status-badge {
+          display: inline-block;
+          padding: 2px 8px;
+          font-size: 11px;
+          font-weight: 500;
+          border-radius: 12px;
+          text-transform: uppercase;
+          letter-spacing: 0.02em;
+        }
+
+        .bp-status-info {
+          background: var(--bp-info-bg);
+          color: var(--bp-info-text);
+        }
+
+        .bp-status-warning {
+          background: var(--bp-warning-bg);
+          color: var(--bp-warning-text);
+        }
+
+        .bp-inbox-card-desc {
+          color: var(--bp-text-secondary);
+          margin: 0 0 12px 0;
+          font-size: 14px;
+        }
+
+        .bp-inbox-card-meta {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          font-size: 13px;
+          color: var(--bp-text-tertiary);
+        }
+
+        .bp-dot {
+          width: 3px;
+          height: 3px;
+          background: var(--bp-text-tertiary);
+          border-radius: 50%;
+        }
+
+        .bp-inbox-card-action {
+          flex-shrink: 0;
+        }
+
+        .bp-btn-primary, .bp-btn-warning {
+          padding: 8px 16px;
+          font-size: 14px;
+          font-weight: 500;
+          border: none;
+          border-radius: 6px;
+          cursor: pointer;
+          transition: all 0.2s;
+        }
+
+        .bp-btn-primary {
+          background: var(--bp-accent);
+          color: white;
+        }
+
+        .bp-btn-primary:hover {
+          background: var(--bp-accent-hover);
+          transform: translateY(-1px);
+        }
+
+        .bp-btn-warning {
+          background: var(--bp-warning);
+          color: white;
+        }
+
+        .bp-btn-warning:hover {
+          background: var(--bp-warning-hover);
+          transform: translateY(-1px);
+        }
+      `}</style>
     </div>
   )
 }
