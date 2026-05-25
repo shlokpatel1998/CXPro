@@ -125,7 +125,8 @@ export default function MembersPage() {
       }
 
       // Call the backend API
-      const response = await fetch('http://localhost:8000/invites', {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
+      const response = await fetch(`${apiUrl}/invites`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
