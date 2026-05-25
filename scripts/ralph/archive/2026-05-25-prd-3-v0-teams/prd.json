@@ -19,8 +19,8 @@
         "Typecheck passes"
       ],
       "priority": 1,
-      "passes": true,
-      "notes": "Completed: Migration 014 created with create_project_with_discipline function, integration test passing"
+      "passes": false,
+      "notes": ""
     },
     {
       "id": "US-002",

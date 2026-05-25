@@ -1,9 +1,24 @@
 # Ralph Progress Log
-Started: 2026-05-25 (PRD-5 v0 Stabilization)
+Started: Mon May 25 13:05:22 CDT 2026
+---
 
 ## Codebase Patterns
-- Every CREATE OR REPLACE FUNCTION in migrations must restore OWNER TO postgres AND SET search_path = public (canonical safeguard recorded in migration 012). Skipping this re-introduces the "Database error saving new user" class of bug.
-- Frontend errors must surface via getErrorMessage() from lib/error.ts. `instanceof Error` is false for Supabase RPC error objects.
-- .single() throws on zero rows; use .maybeSingle() unless the row must exist.
+- Assignments table uses user_id directly (not participation_id) 
+- discipline_scopes table has no updated_at column (only created_at)
+- Use ON CONFLICT DO NOTHING for idempotency in migrations
+- Test functions must use transactions with SET LOCAL for auth.uid() to work
+- Migration functions should use SECURITY DEFINER and end with ALTER FUNCTION ... OWNER TO postgres
 
+## 2026-05-25 13:13 - US-001
+- Implemented Migration 014 to create create_project_with_discipline function
+- Files changed:
+  - migrations/014_seat_project_creator.sql (new)
+  - backend/test_seat_project_creator.py (new)
+  - backend/apply_seat_creator_migration.py (new)
+- **Learnings for future iterations:**
+  - assignments table uses user_id not participation_id (discovered via schema inspection)
+  - discipline_scopes table lacks updated_at column (has only created_at)
+  - auth.uid() reads from request.jwt.claim.sub which requires SET LOCAL in a transaction
+  - asyncpg requires transactions for SET LOCAL commands to persist
+  - UUID comparisons in Python need str() conversion when comparing with database results
 ---
