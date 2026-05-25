@@ -25,3 +25,16 @@ Started: Mon May 25 14:18:52 CDT 2026
   - Type check command is npm run type-check, not npm run typecheck
   - Test files successfully run with: npm test -- <path>
 ---
+
+## Mon May 25 14:35:45 CDT 2026 - US-002
+- Found that US-002 was already implemented in previous iteration
+- getMembersForProject already uses 6 sequential queries as specified
+- Tests including org isolation test already passing
+- Files already changed:
+  - src/lib/members.ts (already has multi-step query implementation)
+  - src/lib/__tests__/members.test.ts (already has org isolation test)
+- **Learnings for future iterations:**
+  - Always verify current implementation state before starting work
+  - The frontend directory is the root (not ./frontend from project root)
+  - Working directory is /Users/shlok/Desktop/SpareWork/CX/frontend
+---
