@@ -175,7 +175,7 @@
         "Verify in browser using dev-browser skill: invite shlokp98+test1@gmail.com, click Resend twice (2/3 -> 3/3), third Resend disabled; try inviting shlokp98@icloud.com -> see self-invite error inline"
       ],
       "priority": 10,
-      "passes": false,
+      "passes": true,
       "notes": ""
     }
   ]

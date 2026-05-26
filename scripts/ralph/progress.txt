@@ -214,3 +214,17 @@ Started: Mon May 25 21:22:03 CDT 2026
   - All 6 scenarios tested: new invite (201), immediate resend (200), cap reached (409), self-invite (409), already-member (409), cx_engineer forbidden (403)
   - Tests pass both with pytest and standalone execution
 ---
+
+## Mon May 25 22:17:06 CDT 2026 - US-010
+- Implemented frontend members page resend functionality with send_count indicator and error mapping
+- Files changed:
+  - Modified frontend/src/lib/members.ts to add send_count to PendingInvite interface and query
+  - Modified frontend/src/app/(app)/project/[id]/members/page.tsx to add Sends column, Resend button, handleResendInvite function, and error message mapping
+- **Learnings for future iterations:**
+  - PendingInvite interface now includes send_count field (defaults to 1 if not present)
+  - Resend functionality works by calling POST /invites with same invite data (triggers IncrementResend)
+  - Error handling maps backend error codes to user-friendly messages: self_invite, already_member, cap_reached
+  - Resend button disabled when send_count >= 3 with hover text explaining the limit
+  - After successful resend, pending invites list refetches to update the send_count display
+  - Type-check passes without issues for all TypeScript changes
+---
