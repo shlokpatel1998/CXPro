@@ -16,6 +16,21 @@ Started: Mon May 25 21:22:03 CDT 2026
 - Frontend test mocks: chain-mock supabase.from(...).select(...).eq(...) — see members.test.ts for pattern
 ---
 
+## Mon May 25 21:53:51 CDT 2026 - US-006
+- Implemented schema migration for pending_invitations send_count column and partial unique index
+- Files changed:
+  - Created migrations/017_pending_invitations_send_count.sql with idempotent migration
+  - Created backend/apply_send_count_migration.py following existing apply script convention
+- **Learnings for future iterations:**
+  - Migration numbering continues sequentially (last was 016, so next is 017)
+  - Apply scripts use psycopg2 (not psycopg) for database connections
+  - Apply scripts pattern: load_dotenv('../.env.local') to get DATABASE_URL
+  - Migrations use DO blocks with IF NOT EXISTS checks for idempotency
+  - Partial unique indexes use WHERE clause syntax: WHERE accepted_at IS NULL
+  - Backend dependencies need to be installed with python3 -m pip (psycopg2-binary, python-dotenv)
+  - Migration successfully added send_count column with default value 1 and partial unique index
+---
+
 ## Mon May 25 21:30:31 CDT 2026 - US-001
 - Renamed /dashboard route to /organization with redirect
 - Files changed:
@@ -28,6 +43,21 @@ Started: Mon May 25 21:22:03 CDT 2026
   - Browser testing tools not available via MCP, manual testing needed for UI verification
 ---
 
+## Mon May 25 21:53:51 CDT 2026 - US-006
+- Implemented schema migration for pending_invitations send_count column and partial unique index
+- Files changed:
+  - Created migrations/017_pending_invitations_send_count.sql with idempotent migration
+  - Created backend/apply_send_count_migration.py following existing apply script convention
+- **Learnings for future iterations:**
+  - Migration numbering continues sequentially (last was 016, so next is 017)
+  - Apply scripts use psycopg2 (not psycopg) for database connections
+  - Apply scripts pattern: load_dotenv('../.env.local') to get DATABASE_URL
+  - Migrations use DO blocks with IF NOT EXISTS checks for idempotency
+  - Partial unique indexes use WHERE clause syntax: WHERE accepted_at IS NULL
+  - Backend dependencies need to be installed with python3 -m pip (psycopg2-binary, python-dotenv)
+  - Migration successfully added send_count column with default value 1 and partial unique index
+---
+
 ## Mon May 25 21:33:42 CDT 2026 - US-002
 - Implemented getPrimaryOrg deep module with unit tests
 - Files changed:
@@ -38,6 +68,21 @@ Started: Mon May 25 21:22:03 CDT 2026
   - When accessing joined data in TypeScript, may need to cast to `any` to satisfy type checker
   - Test pattern follows members.test.ts approach with mock chain for from().select().eq().order()
   - All tests pass and type-check succeeds
+---
+
+## Mon May 25 21:53:51 CDT 2026 - US-006
+- Implemented schema migration for pending_invitations send_count column and partial unique index
+- Files changed:
+  - Created migrations/017_pending_invitations_send_count.sql with idempotent migration
+  - Created backend/apply_send_count_migration.py following existing apply script convention
+- **Learnings for future iterations:**
+  - Migration numbering continues sequentially (last was 016, so next is 017)
+  - Apply scripts use psycopg2 (not psycopg) for database connections
+  - Apply scripts pattern: load_dotenv('../.env.local') to get DATABASE_URL
+  - Migrations use DO blocks with IF NOT EXISTS checks for idempotency
+  - Partial unique indexes use WHERE clause syntax: WHERE accepted_at IS NULL
+  - Backend dependencies need to be installed with python3 -m pip (psycopg2-binary, python-dotenv)
+  - Migration successfully added send_count column with default value 1 and partial unique index
 ---
 
 ## Mon May 25 21:44:00 CDT 2026 - US-003
@@ -57,6 +102,21 @@ Started: Mon May 25 21:22:03 CDT 2026
   - Browser verification still requires manual testing (MCP tools not available)
 ---
 
+## Mon May 25 21:53:51 CDT 2026 - US-006
+- Implemented schema migration for pending_invitations send_count column and partial unique index
+- Files changed:
+  - Created migrations/017_pending_invitations_send_count.sql with idempotent migration
+  - Created backend/apply_send_count_migration.py following existing apply script convention
+- **Learnings for future iterations:**
+  - Migration numbering continues sequentially (last was 016, so next is 017)
+  - Apply scripts use psycopg2 (not psycopg) for database connections
+  - Apply scripts pattern: load_dotenv('../.env.local') to get DATABASE_URL
+  - Migrations use DO blocks with IF NOT EXISTS checks for idempotency
+  - Partial unique indexes use WHERE clause syntax: WHERE accepted_at IS NULL
+  - Backend dependencies need to be installed with python3 -m pip (psycopg2-binary, python-dotenv)
+  - Migration successfully added send_count column with default value 1 and partial unique index
+---
+
 ## Mon May 25 21:43:16 CDT 2026 - US-004
 - Added Organization link to UserMenu dropdown
 - Files changed:
@@ -67,4 +127,47 @@ Started: Mon May 25 21:22:03 CDT 2026
   - Link component from Next.js handles routing, onClick={() => setIsOpen(false)} closes dropdown
   - Organization link is visible on all routes (not gated on projectId like Manage Team)
   - Type-check passes without issues for the new Link component
+---
+
+## Mon May 25 21:53:51 CDT 2026 - US-006
+- Implemented schema migration for pending_invitations send_count column and partial unique index
+- Files changed:
+  - Created migrations/017_pending_invitations_send_count.sql with idempotent migration
+  - Created backend/apply_send_count_migration.py following existing apply script convention
+- **Learnings for future iterations:**
+  - Migration numbering continues sequentially (last was 016, so next is 017)
+  - Apply scripts use psycopg2 (not psycopg) for database connections
+  - Apply scripts pattern: load_dotenv('../.env.local') to get DATABASE_URL
+  - Migrations use DO blocks with IF NOT EXISTS checks for idempotency
+  - Partial unique indexes use WHERE clause syntax: WHERE accepted_at IS NULL
+  - Backend dependencies need to be installed with python3 -m pip (psycopg2-binary, python-dotenv)
+  - Migration successfully added send_count column with default value 1 and partial unique index
+---
+
+## Mon May 25 21:46:41 CDT 2026 - US-005
+- Changed post-login redirect from /dashboard to /projects
+- Files changed:
+  - Modified frontend/src/app/auth/page.tsx to redirect to /projects after sign-in/sign-up
+  - Modified frontend/src/app/(app)/project/[id]/page.tsx to redirect to /organization on error
+  - Modified frontend/src/app/accept-invite/page.tsx to redirect to /organization on error
+- **Learnings for future iterations:**
+  - Auth page has three redirect locations: session check on mount, auth state listener, and handleSuccess callback
+  - Project page error redirects should go to /organization now (the new home for org management)
+  - The redirect stub from US-001 (/dashboard -> /organization) handles any remaining legacy /dashboard links
+  - All auth success redirects now point to /projects as the immediate landing page
+---
+
+## Mon May 25 21:53:51 CDT 2026 - US-006
+- Implemented schema migration for pending_invitations send_count column and partial unique index
+- Files changed:
+  - Created migrations/017_pending_invitations_send_count.sql with idempotent migration
+  - Created backend/apply_send_count_migration.py following existing apply script convention
+- **Learnings for future iterations:**
+  - Migration numbering continues sequentially (last was 016, so next is 017)
+  - Apply scripts use psycopg2 (not psycopg) for database connections
+  - Apply scripts pattern: load_dotenv('../.env.local') to get DATABASE_URL
+  - Migrations use DO blocks with IF NOT EXISTS checks for idempotency
+  - Partial unique indexes use WHERE clause syntax: WHERE accepted_at IS NULL
+  - Backend dependencies need to be installed with python3 -m pip (psycopg2-binary, python-dotenv)
+  - Migration successfully added send_count column with default value 1 and partial unique index
 ---

@@ -85,7 +85,7 @@
         "Verify in browser using dev-browser skill: sign in fresh, land on /projects"
       ],
       "priority": 5,
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
@@ -101,7 +101,7 @@
         "Run the migration against the dev DB and confirm send_count column exists and the partial unique index is present"
       ],
       "priority": 6,
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
