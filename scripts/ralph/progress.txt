@@ -15,3 +15,15 @@ Started: Mon May 25 21:22:03 CDT 2026
 - Backend tests use pytest; pytest.ini and requirements-test.txt already exist in backend/
 - Frontend test mocks: chain-mock supabase.from(...).select(...).eq(...) — see members.test.ts for pattern
 ---
+
+## Mon May 25 21:30:31 CDT 2026 - US-001
+- Renamed /dashboard route to /organization with redirect
+- Files changed:
+  - Created frontend/src/app/(app)/organization/page.tsx (verbatim copy of dashboard content)
+  - Modified frontend/src/app/(app)/dashboard/page.tsx to be a redirect component using router.replace
+- **Learnings for future iterations:**
+  - The frontend app structure uses (app) folder for authenticated routes
+  - Redirect pattern uses 'use client', useEffect, and router.replace for client-side redirects
+  - Type-check command confirmed as: npm run type-check
+  - Browser testing tools not available via MCP, manual testing needed for UI verification
+---
