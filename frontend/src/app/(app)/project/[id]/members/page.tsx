@@ -7,6 +7,7 @@ import { getMembersForProject, getPendingInvitesForProject, updateDiscipline, ge
 import { getErrorMessage } from '@/lib/error'
 import { ROLES, ROLE_LABELS, type Role } from '@/lib/roles'
 import { canManageTeam } from '@/lib/permissions'
+import { ProjectSwitcher } from '@/components/ProjectSwitcher'
 
 export default function MembersPage() {
   const params = useParams()
@@ -186,6 +187,8 @@ export default function MembersPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-2xl font-bold mb-6">Project Members</h1>
+      
+      <ProjectSwitcher />
 
       {roleLoading ? (
         <div className="bg-white rounded-lg shadow-md p-6 mb-8">

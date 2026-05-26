@@ -136,3 +136,30 @@ Started: Mon May 26 23:28:43 CDT 2026
   - The members page doesn't currently have a resend button feature (mentioned in criteria but not implemented)
   - Import both type Role and the permission functions when updating permission checks
 ---
+
+## Mon May 26 00:02:15 CDT 2026 - US-010
+- Replaced OCA gates with canManageTeam permission predicate on project and entity pages
+- Files changed:
+  - frontend/src/app/(app)/project/[id]/page.tsx: Imported Role type and canManageTeam, widened userRole state type to Role | null, replaced two userRole === 'OCA' checks with canManageTeam(userRole)
+  - frontend/src/app/(app)/entity/[id]/page.tsx: Imported Role type and canManageTeam, widened User interface role type to Role, replaced user.role !== 'OCA' and user?.role === 'OCA' checks with canManageTeam calls
+- TypeScript type checking passes successfully
+- CM users can now see upload submittal buttons and accept draft actions along with OCAs
+- **Learnings for future iterations:**
+  - When widening role types, need to cast fetched role values to Role type (e.g., membershipData.role as Role)
+  - Both project and entity pages handle user role state differently - project uses separate userRole state, entity includes role in User interface
+  - Permission gates occur at UI element level (buttons, modals) for conditional rendering
+  - The project page had two OCA gates (upload button at line 553 and upload modal at line 646)
+---
+
+## Mon May 26 00:06:00 CDT 2026 - US-011
+- Added Name column to Current Members table on the members page
+- Files changed:
+  - frontend/src/app/(app)/project/[id]/members/page.tsx: Added Name column header before Email, added member.full_name with '—' fallback for each row
+- Name column displays full_name from the ProjectMember interface, showing '—' when name is null/undefined/empty
+- TypeScript type checking passes successfully
+- **Learnings for future iterations:**
+  - The ProjectMember interface already includes optional full_name field that's fetched from users table
+  - Path from root to members page is frontend/src/app/(app)/project/[id]/members/page.tsx (not /[id]/)
+  - Git commands need proper escaping for parentheses in paths, or use quotes around paths
+  - Current Members table and Pending Invitations are separate tables - be specific when editing
+---
