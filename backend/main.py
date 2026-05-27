@@ -9,7 +9,7 @@ import os
 from dotenv import load_dotenv
 from db import get_supabase_client, get_db_connection
 from auth import security, get_current_user
-from invitation_service import InvitationService
+from contexts.identity_access.invitations import InvitationService
 
 load_dotenv()
 
