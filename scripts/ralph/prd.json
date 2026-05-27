@@ -155,8 +155,8 @@
         "No other files modified"
       ],
       "priority": 8,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Completed 2026-05-27: Pre-deletion grep for 'contexts/commissioning' in frontend/src/ returned zero hits. Deleted index.ts and types.ts (empty stubs). Tests remain at 48 passing. Typecheck passes."
     }
   ]
 }

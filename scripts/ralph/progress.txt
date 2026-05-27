@@ -1,3 +1,12 @@
+## 2026-05-27 - US-008
+- Pre-deletion grep for 'contexts/commissioning' in frontend/src/ returned zero hits (safe to delete)
+- Deleted frontend/src/contexts/commissioning/index.ts and types.ts (empty stubs with no real implementations)
+- Tests: 48 vitest tests passing (unchanged from US-007 baseline)
+- Typecheck passes (no errors outside .next/)
+- **Learnings for future iterations:**
+  - The commissioning context was a pure empty scaffold; no consumers existed anywhere in the codebase
+---
+
 # Ralph Progress Log
 Started: Tue May 26 20:05:00 CDT 2026
 
