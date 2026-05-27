@@ -96,13 +96,12 @@ class InvitationService:
         discipline_scope_id: str,
         invited_by: str,
     ) -> tuple[dict, int]:
-        from roles import is_valid_role
+        from contexts.identity_access.memberships import is_valid_role, can_manage_team
 
         if not is_valid_role(role):
             raise HTTPException(status_code=400, detail=f"Invalid role: {role}")
 
         caller_role = await self._get_user_role(invited_by, org_id)
-        from permissions import can_manage_team
         if not can_manage_team(caller_role):
             raise HTTPException(status_code=403, detail="You do not have permission to invite users to the organization")
 

@@ -5,7 +5,7 @@ Deep module: JWT extraction, current_user resolution, and permission enforcement
 from fastapi import HTTPException, Depends
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from db import get_supabase_client
-from permissions import can_manage_team
+from contexts.identity_access.memberships import can_manage_team
 
 security = HTTPBearer()
 
