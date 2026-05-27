@@ -55,3 +55,14 @@ Started: PRD-9 refactor — attempt 2, re-running on top of merged PRD-8 (main @
   - invitations.py uses lazy inline import (inside create_invitation method) for memberships — consistent with prior pattern
   - US-004 will create contexts/identity_access/api.py router and slim down main.py to a composition root
 ---
+
+## 2026-05-27 - US-004
+- Created backend/contexts/identity_access/api.py: thin APIRouter with POST /invites handler; delegates to InvitationService from invitations.py; uses get_current_user, get_supabase_client, get_db_connection from deep modules
+- Updated backend/main.py: stripped all route handlers and business logic; now only FastAPI instantiation, CORS middleware, exception handler, include_router(identity_access_router), and /health + / utility endpoints
+- Files changed: backend/contexts/identity_access/api.py (new), backend/main.py (updated)
+- pytest: 37 passed, 5 failed — identical to US-003 baseline
+- **Learnings for future iterations:**
+  - InvitationRequest Pydantic model moved from main.py into api.py — test_main.py (TestClient) still passes because it imports `app` from main, and app now includes the router
+  - main.py exception_handler and CORS middleware remain in main.py (app-level concerns, not context-specific)
+  - US-005 will relocate workers to backend/workers/
+---
