@@ -1,14 +1,14 @@
-from fastapi import FastAPI, HTTPException, Depends, Request, Response
+from fastapi import FastAPI, Depends, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi.security import HTTPAuthorizationCredentials
 from pydantic import BaseModel
 import logging
 import traceback
 import os
-import asyncpg
 from dotenv import load_dotenv
-from supabase import create_client, Client
+from db import get_supabase_client, get_db_connection
+from auth import security, get_current_user
 from invitation_service import InvitationService
 
 load_dotenv()
@@ -48,18 +48,6 @@ async def unhandled_exception_handler(request: Request, exc: Exception):
         content={"detail": f"{type(exc).__name__}: {exc}"},
     )
 
-# Security
-security = HTTPBearer()
-
-# Supabase client
-supabase_url = os.getenv("NEXT_PUBLIC_SUPABASE_URL", "")
-supabase_key = os.getenv("DATABASE_SECRET", "")
-supabase: Client = create_client(supabase_url, supabase_key)
-
-# Database connection
-DATABASE_URL = os.getenv("DATABASE_URL")
-
-
 class InvitationRequest(BaseModel):
     """Request model for creating an invitation"""
     email: str
@@ -67,16 +55,6 @@ class InvitationRequest(BaseModel):
     project_id: str
     role: str
     discipline_scope_id: str
-
-
-async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)):
-    """Get current user from JWT token"""
-    try:
-        # Verify the JWT and get user
-        user = supabase.auth.get_user(credentials.credentials)
-        return user.user
-    except Exception as e:
-        raise HTTPException(status_code=401, detail="Invalid authentication")
 
 
 @app.post("/invites")
@@ -98,17 +76,14 @@ async def create_invitation(
     - 409 for cap reached, self-invite, or already-member
     - 403 for non-OCA attempts
     """
-    # Get current user from token
     current_user = await get_current_user(credentials)
-    
-    # Connect to database
-    conn = await asyncpg.connect(DATABASE_URL)
-    
+
+    supabase = get_supabase_client()
+    conn = await get_db_connection()
+
     try:
-        # Create service instance
         service = InvitationService(supabase, conn)
         
-        # Create invitation (now returns tuple of result dict and status code)
         result, status_code = await service.create_invitation(
             email=request.email,
             org_id=request.org_id,
@@ -117,10 +92,9 @@ async def create_invitation(
             discipline_scope_id=request.discipline_scope_id,
             invited_by=current_user.id
         )
-        
-        # Set the response status code
+
         response.status_code = status_code
-        
+
         return result
     
     finally:
