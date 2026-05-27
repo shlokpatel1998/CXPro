@@ -110,3 +110,12 @@ Started: PRD-9 refactor — attempt 2, re-running on top of merged PRD-8 (main @
   - No other Identity-only components existed beyond UserMenu — cross-cutting components (CommandPalette, UploadModal, etc.) correctly left in place
   - US-008 will delete the empty frontend/src/contexts/commissioning/ stub
 ---
+
+## 2026-05-27 - US-008
+- Pre-deletion grep for 'contexts/commissioning' in frontend/src/ returned zero hits — safe to delete
+- Deleted frontend/src/contexts/commissioning/index.ts and types.ts (directory removed entirely)
+- Typecheck passes; vitest: 4 failed (same pre-existing failures), 67 passed — identical to US-007 baseline
+- **Learnings for future iterations:**
+  - All US-001..US-008 stories now pass — refactor pilot complete
+  - The bounded-context layout (deep modules, Supabase-pragmatic) is fully established: backend/contexts/identity_access/ and frontend/src/contexts/identity/ are the canonical reference implementations
+---

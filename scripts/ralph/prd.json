@@ -155,7 +155,7 @@
         "No other files modified"
       ],
       "priority": 8,
-      "passes": false,
+      "passes": true,
       "notes": ""
     }
   ]
