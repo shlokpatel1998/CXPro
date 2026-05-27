@@ -13,6 +13,7 @@ from datetime import datetime
 from typing import Dict, Any, Optional
 
 from outbox_dispatcher import OutboxDispatcher, OutboxEvent
+from db import get_database_url, get_asyncpg_connection
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -31,9 +32,7 @@ class InboxSubscriber:
         env_path = Path(__file__).parent.parent / ".env.local"
         load_dotenv(env_path)
         
-        self.database_url = os.getenv("DATABASE_URL")
-        if not self.database_url:
-            raise ValueError("DATABASE_URL not found in environment")
+        self.database_url = get_database_url()
         
         # Initialize outbox dispatcher
         self.dispatcher = OutboxDispatcher(
@@ -52,7 +51,7 @@ class InboxSubscriber:
             logger.info(f"Processing AgentRunCompleted event {event.id}")
             
             # Call the database function to create inbox items
-            async with await asyncpg.connect(self.database_url) as conn:
+            async with await get_asyncpg_connection() as conn:
                 await conn.execute(
                     "SELECT create_inbox_item_from_agent_run($1, $2)",
                     event.event_data,  # The payload from the event
@@ -70,7 +69,7 @@ class InboxSubscriber:
             logger.info(f"Processing AIRefusal event {event.id}")
             
             # Call the database function to create inbox items
-            async with await asyncpg.connect(self.database_url) as conn:
+            async with await get_asyncpg_connection() as conn:
                 await conn.execute(
                     "SELECT create_inbox_item_from_agent_run($1, $2)",
                     event.event_data,  # The payload from the event

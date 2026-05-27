@@ -438,12 +438,8 @@ if __name__ == "__main__":
         load_dotenv("../.env.local")
         
         # Create connection pool
-        db_url = os.getenv("DATABASE_URL")
-        if not db_url:
-            print("Error: DATABASE_URL not found")
-            return
-            
-        pool = await asyncpg.create_pool(db_url, min_size=1, max_size=5)
+        from db import get_asyncpg_pool
+        pool = await get_asyncpg_pool(min_size=1, max_size=5)
         
         try:
             # Register and start agent

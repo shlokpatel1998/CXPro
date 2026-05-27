@@ -8,16 +8,6 @@ from pathlib import Path
 
 async def apply_migration():
     """Apply the inbox and subscriptions migration."""
-    # Load environment variables
-    from dotenv import load_dotenv
-    env_path = Path(__file__).parent.parent / ".env.local"
-    load_dotenv(env_path)
-    
-    database_url = os.getenv("DATABASE_URL")
-    if not database_url:
-        print("Error: DATABASE_URL not found in environment")
-        return False
-    
     # Read migration file
     migration_path = Path(__file__).parent.parent / "migrations" / "006_inbox_subscriptions.sql"
     if not migration_path.exists():
@@ -28,7 +18,8 @@ async def apply_migration():
     
     try:
         # Connect to database
-        conn = await asyncpg.connect(database_url)
+        from db import get_asyncpg_connection
+        conn = await get_asyncpg_connection()
         
         print("Applying Slice-07 inbox and subscriptions migration...")
         

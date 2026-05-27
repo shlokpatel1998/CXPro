@@ -21,7 +21,8 @@ async def test_full_pipeline_accept_draft():
     """Test the complete pipeline from document upload to accepting an AI draft"""
     
     # Connect to database
-    conn = await asyncpg.connect(DATABASE_URL)
+    from db import get_asyncpg_connection
+    conn = await get_asyncpg_connection()
     
     try:
         # 1. Create test data - simulate user and project setup (Slice-02)

@@ -13,6 +13,7 @@ from dataclasses import dataclass
 from datetime import datetime
 
 import asyncpg
+from db import get_database_url
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)

@@ -193,15 +193,12 @@ class TestIngestionPipelineDatabase:
     @pytest.fixture
     async def db_connection(self):
         """Create test database connection."""
-        load_dotenv()
-        database_url = os.getenv('DATABASE_URL')
-        
-        if not database_url:
-            pytest.skip("DATABASE_URL not set")
-        
-        conn = await asyncpg.connect(database_url)
-        yield conn
-        await conn.close()
+        from db import get_asyncpg_connection
+        try:
+            conn = await get_asyncpg_connection()
+            yield conn
+        finally:
+            await conn.close()
     
     async def test_pgvector_similarity_query(self, db_connection):
         """Test pgvector similarity search functionality."""

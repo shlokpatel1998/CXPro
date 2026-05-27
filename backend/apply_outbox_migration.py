@@ -15,9 +15,8 @@ def apply_migration():
     """Apply the outbox dispatcher migration"""
     
     # Get database connection string
-    database_url = os.environ.get('DATABASE_URL')
-    if not database_url:
-        raise ValueError("DATABASE_URL environment variable is required")
+    from db import get_database_url
+    database_url = get_database_url()
     
     print("Connecting to database...")
     

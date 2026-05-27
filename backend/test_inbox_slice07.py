@@ -18,7 +18,8 @@ DATABASE_URL = os.getenv("DATABASE_URL")
 async def test_inbox_functionality():
     """Test the complete Slice-07 inbox flow."""
     
-    conn = await asyncpg.connect(DATABASE_URL)
+    from db import get_asyncpg_connection
+    conn = await get_asyncpg_connection()
     
     try:
         print("Testing Slice-07: Inbox-as-home functionality\n")

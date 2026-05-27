@@ -50,11 +50,8 @@ class IngestionPipeline:
     
     async def _setup_database(self):
         """Set up database connection pool."""
-        database_url = os.getenv('DATABASE_URL')
-        if not database_url:
-            raise ValueError("DATABASE_URL environment variable not set")
-        
-        self.db_pool = await asyncpg.create_pool(database_url, min_size=1, max_size=5)
+        from db import get_asyncpg_pool
+        self.db_pool = await get_asyncpg_pool(min_size=1, max_size=5)
     
     async def _register_subscriber(self):
         """Register this pipeline as an outbox subscriber."""

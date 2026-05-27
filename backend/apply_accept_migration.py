@@ -23,7 +23,8 @@ async def apply_migration():
         migration_sql = f.read()
     
     # Connect to database
-    conn = await asyncpg.connect(DATABASE_URL)
+    from db import get_asyncpg_connection
+    conn = await get_asyncpg_connection()
     
     try:
         # Apply migration

@@ -28,7 +28,8 @@ async def apply_migration():
     
     try:
         # Connect to database
-        conn = await asyncpg.connect(database_url)
+        from db import get_asyncpg_connection
+        conn = await get_asyncpg_connection()
         
         print("Applying Slice-06 agent execution migration...")
         

@@ -22,13 +22,12 @@ load_dotenv(env_path)
 @pytest.fixture
 async def db_pool():
     """Create database connection pool for tests."""
-    database_url = os.getenv("DATABASE_URL")
-    if not database_url:
-        pytest.skip("DATABASE_URL not set")
-    
-    pool = await asyncpg.create_pool(database_url, min_size=1, max_size=5)
-    yield pool
-    await pool.close()
+    from db import get_asyncpg_pool, close_pool
+    try:
+        pool = await get_asyncpg_pool(min_size=1, max_size=5)
+        yield pool
+    finally:
+        await close_pool()
 
 
 @pytest.fixture

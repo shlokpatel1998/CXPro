@@ -11,14 +11,12 @@ from dotenv import load_dotenv
 # Load environment variables
 load_dotenv('../.env.local')
 
-DATABASE_URL = os.getenv('DATABASE_URL')
-
-if not DATABASE_URL:
-    print("ERROR: DATABASE_URL environment variable not set")
-    exit(1)
-
 def apply_migration():
     """Apply the documents and outbox migration"""
+    
+    # Get database connection string
+    from db import get_database_url
+    DATABASE_URL = get_database_url()
     
     # Read migration file
     with open('../migrations/002_documents_outbox.sql', 'r') as f:

@@ -13,9 +13,8 @@ def apply_migration():
     load_dotenv()
     
     # Database connection from environment
-    database_url = os.getenv('DATABASE_URL')
-    if not database_url:
-        raise ValueError("DATABASE_URL environment variable not set")
+    from db import get_database_url
+    database_url = get_database_url()
     
     # Read migration file
     migration_path = os.path.join(os.path.dirname(__file__), '..', 'migrations', '004_pdf_ingestion.sql')
