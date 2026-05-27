@@ -120,8 +120,8 @@
         "Verify in browser using dev-browser skill: sign in, open /projects, open /project/[id]/members, send an invite, click resend — all behaviors identical to pre-refactor"
       ],
       "priority": 6,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Completed 2026-05-27: Created contexts/identity/api.ts merging members.ts, identity.ts, roles.ts, permissions.ts. Added vitest back to package.json with vitest.config.ts. Created colocated api.test.ts with 43 passing tests. Updated supabase.ts to use Role type from api.ts."
     },
     {
       "id": "US-007",
