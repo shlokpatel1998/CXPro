@@ -1,6 +1,21 @@
 # Ralph Progress Log
 Started: Tue May 26 20:05:00 CDT 2026
 
+## 2026-05-27 - US-007
+- Created frontend/src/contexts/identity/ui.tsx with UserMenu component
+  - Updated import from `@/lib/identity` to `@/contexts/identity/api` for getInitials
+  - Exported as named export `UserMenu` (not default) to match module style
+- UserMenu.tsx did not exist in this branch (was from a prior PRD branch); created from git history
+- No consumers of old path existed — grep for `components/UserMenu` returns zero hits
+- Created colocated frontend/src/contexts/identity/ui.test.tsx with 5 tests
+- Tests: 48 vitest tests passing (43 from api.test.ts + 5 new from ui.test.tsx)
+- Typecheck passes (no new errors outside .next/)
+- **Learnings for future iterations:**
+  - UserMenu.tsx was already removed from this branch before US-007; git show [commit]:path used to recover it
+  - No React Testing Library installed; tests use vitest with pure logic assertions
+  - Named exports preferred over default exports in this context module pattern
+---
+
 ## Codebase Patterns
 - Use raw asyncpg for database operations (no Supabase SDK)
 - Use db.get_asyncpg_connection() for single operations, db.get_asyncpg_pool() for long-running services
