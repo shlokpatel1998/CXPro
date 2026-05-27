@@ -12,7 +12,7 @@ from pathlib import Path
 from datetime import datetime
 from typing import Dict, Any, Optional
 
-from outbox_dispatcher import OutboxDispatcher, OutboxEvent
+from workers.outbox_dispatcher import OutboxDispatcher, OutboxEvent
 from db import get_database_url, get_asyncpg_connection
 
 # Set up logging
@@ -29,7 +29,7 @@ class InboxSubscriber:
     def __init__(self):
         # Load environment variables
         from dotenv import load_dotenv
-        env_path = Path(__file__).parent.parent / ".env.local"
+        env_path = Path(__file__).parent.parent.parent / ".env.local"
         load_dotenv(env_path)
         
         self.database_url = get_database_url()
