@@ -99,8 +99,8 @@
         "Tests pass"
       ],
       "priority": 5,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Completed 2026-05-27: Created backend/workers/ directory with __init__.py. Moved outbox_dispatcher.py and inbox_subscriber.py verbatim (only imports updated). Worker tests and verify script moved with sources. Updated cx_execution_agent.py import. Tests remain at 37 passing (same 2 pre-existing failures)."
     },
     {
       "id": "US-006",

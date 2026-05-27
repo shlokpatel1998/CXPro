@@ -64,6 +64,28 @@ Started: Tue May 26 20:05:00 CDT 2026
   - Test discovery works recursively — pytest finds tests in contexts/ subdirectories automatically
 ---
 
+## 2026-05-27 - US-005
+- Created backend/workers/ directory and moved both long-running workers
+- Files created:
+  - backend/workers/__init__.py
+  - backend/workers/outbox_dispatcher.py (moved from backend/outbox_dispatcher.py, import updated)
+  - backend/workers/inbox_subscriber.py (moved from backend/inbox_subscriber.py, import of outbox_dispatcher updated)
+  - backend/workers/test_outbox_dispatcher.py (moved with source, import updated)
+  - backend/workers/verify_outbox_dispatcher.py (moved with source)
+- Files deleted:
+  - backend/outbox_dispatcher.py
+  - backend/inbox_subscriber.py
+  - backend/test_outbox_dispatcher.py
+  - backend/verify_outbox_dispatcher.py
+- Updated backend/cx_execution_agent.py lazy import from `outbox_dispatcher` to `workers.outbox_dispatcher`
+- railway.json only references `main:app` (no worker paths), so no change needed
+- Tests: 37 passed, same 2 pre-existing failures — unchanged from US-004 baseline
+- **Learnings for future iterations:**
+  - Workers run from backend/ as CWD, so `from workers.outbox_dispatcher import` works (no relative import needed)
+  - inbox_subscriber.py had `Path(__file__).parent.parent / ".env.local"` — updated to `.parent.parent.parent` after moving one level deeper
+  - railway.json only has the main uvicorn start command; no worker process config exists there
+---
+
 ## 2026-05-27 - US-004
 - Created backend/contexts/identity_access/api.py with thin APIRouter
   - InvitationRequest Pydantic model
