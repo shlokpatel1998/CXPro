@@ -63,3 +63,18 @@ Started: Tue May 26 20:05:00 CDT 2026
   - invitations.py already inlined its own copy of ROLES/can_manage_team; US-004 could optionally refactor invitations.py to import from memberships.py, but it's not required per the story
   - Test discovery works recursively — pytest finds tests in contexts/ subdirectories automatically
 ---
+
+## 2026-05-27 - US-004
+- Created backend/contexts/identity_access/api.py with thin APIRouter
+  - InvitationRequest Pydantic model
+  - _get_supabase() lazy singleton for the Supabase client
+  - _get_current_user() dependency
+  - POST /invites handler delegates entirely to invitations.send_invite()
+- Reduced backend/main.py to pure composition root:
+  - Only FastAPI instantiation, CORS middleware, exception handler, include_router, /health, /
+  - Zero route handlers with business logic remain
+- Tests: 37 passed, same 2 pre-existing failures
+- **Learnings for future iterations:**
+  - api.py initializes Supabase lazily via a module-level singleton to avoid env-var issues at import time
+  - The router prefix can be left empty (routes are already /invites) — no prefix needed on include_router
+---

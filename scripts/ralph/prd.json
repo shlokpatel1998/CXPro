@@ -79,8 +79,8 @@
         "Tests pass"
       ],
       "priority": 4,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Completed 2026-05-27: Created contexts/identity_access/api.py with thin APIRouter for /invites. Reduced main.py to composition root with only app setup, middleware, include_router, and /health + / endpoints. Tests remain at 37 passing (same 2 pre-existing failures)."
     },
     {
       "id": "US-005",
