@@ -41,3 +41,17 @@ Started: PRD-9 refactor — attempt 2, re-running on top of merged PRD-8 (main @
   - contexts/identity_access/ is now a proper Python package with __init__.py files
   - roles.py and permissions.py still exist at backend root — US-003 will move roles.py and admin side of permissions.py into memberships.py
 ---
+
+## 2026-05-27 - US-003
+- Created backend/contexts/identity_access/memberships.py: absorbs ROLES, ROLE_LABELS, is_valid_role from roles.py and can_manage_team, can_create_project from permissions.py
+- Deleted backend/roles.py and backend/permissions.py (no shims)
+- Updated backend/auth.py: import can_manage_team from contexts.identity_access.memberships instead of permissions
+- Updated backend/contexts/identity_access/invitations.py: inline imports of is_valid_role and can_manage_team now come from contexts.identity_access.memberships
+- Updated tests/test_roles.py and tests/test_permissions.py: import paths updated to contexts.identity_access.memberships; assertions unchanged
+- pytest: 37 passed, 5 failed — identical to US-002 baseline
+- **Learnings for future iterations:**
+  - memberships.py is now the single source of truth for roles and permission predicates
+  - auth.py still has the require_permission enforcement helper using can_manage_team from memberships
+  - invitations.py uses lazy inline import (inside create_invitation method) for memberships — consistent with prior pattern
+  - US-004 will create contexts/identity_access/api.py router and slim down main.py to a composition root
+---
