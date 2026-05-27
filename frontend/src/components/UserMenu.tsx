@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
-import { getInitials } from "@/lib/identity";
+import { getInitials } from "@/contexts/identity/api";
 
 interface UserMenuProps {
   projectId: string | null;
